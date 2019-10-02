@@ -15,24 +15,37 @@ public class Office {
 
     //constructor with a parameter to specify how much time to keep a thread alive
     public Office(int maxPeopleSecondArea, LinkedBlockingQueue<Runnable> initQueue, long keepAliveTime){
-
-        ArrayBlockingQueue<Runnable> secondAreaQueue = new ArrayBlockingQueue<>(maxPeopleSecondArea);
-        if(keepAliveTime == 0)//no branch shutdown
-            branches = new ThreadPoolExecutor(4, 4, keepAliveTime, TimeUnit.MILLISECONDS, secondAreaQueue);
-        else //branch shutdown
-            branches = new ThreadPoolExecutor(0, 4, keepAliveTime, TimeUnit.MILLISECONDS, secondAreaQueue); //TODO: probably need to lower corepoolsize to 0 in order to make keepAliveTime effective
-        mainAreaQueue = Objects.requireNonNullElseGet(initQueue, LinkedBlockingQueue::new); //(REQUIRES JAVA 9) if null queue is passed, it is ignored
-        branches.prestartAllCoreThreads(); //start all worker threads
         this.maxPeopleSecondArea = maxPeopleSecondArea; //set the number
+        ArrayBlockingQueue<Runnable> secondAreaQueue = new ArrayBlockingQueue<>(maxPeopleSecondArea);
 
+        if(keepAliveTime == 0) {//no branch shutdown
+            branches = new ThreadPoolExecutor(4, 4, keepAliveTime, TimeUnit.MILLISECONDS, secondAreaQueue);
+        }else { //branch shutdown
+            branches = new ThreadPoolExecutor(1, 4, keepAliveTime, TimeUnit.MILLISECONDS, secondAreaQueue);
+        }
+        //branches.prestartAllCoreThreads(); //start all worker threads
+        mainAreaQueue = Objects.requireNonNullElseGet(initQueue, LinkedBlockingQueue::new); //(REQUIRES JAVA 9) if null queue is passed it creates a new one
+
+        System.out.print("Active threads on construct: ");
+        System.out.println(Thread.activeCount());
     }
 
     //opens the postal office, now the people will be loaded into the internal queue and it is available a continuous flow
     public void open(){
+        System.out.print("Active threads before thread activation: ");
+        System.out.println(Thread.activeCount());
         officeThread = new Thread(new OfficeTask());
+        System.out.println(branches.getActiveCount());
         officeThread.start();
+        System.out.print("Active threads on thread activation: ");
+        System.out.println(Thread.activeCount());
 
     }
+
+    public void getOpenBranches(){
+        System.out.println("Active Threads: " + branches.getActiveCount() + "\t poolsize: " + branches.getPoolSize());
+    }
+
 
     //closes the postal office
     public void close(){
@@ -55,7 +68,7 @@ public class Office {
         @Override
         public void run() {
             while(!Thread.interrupted()){
-                if(branches.getQueue().size() < maxPeopleSecondArea && !mainAreaQueue.isEmpty()) {
+                if((branches.getQueue().size() < maxPeopleSecondArea || branches.getPoolSize() < branches.getMaximumPoolSize()) && !mainAreaQueue.isEmpty()) {
                     try {
                         branches.execute(mainAreaQueue.take());
                     } catch (InterruptedException e) {
