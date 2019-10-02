@@ -13,12 +13,12 @@ public class PostalTask implements Runnable{
 
     @Override
     public void run() {
-        System.out.println("Starting " + name); //prints its name
+        //System.out.println("Starting " + name); //prints its name
         try {
             Thread.sleep(length); //sleeps
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println("Ended " + name); //ends task
+        //System.out.println("Ended " + name); //ends task
     }
 }

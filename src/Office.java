@@ -17,7 +17,10 @@ public class Office {
     public Office(int maxPeopleSecondArea, LinkedBlockingQueue<Runnable> initQueue, long keepAliveTime){
 
         ArrayBlockingQueue<Runnable> secondAreaQueue = new ArrayBlockingQueue<>(maxPeopleSecondArea);
-        branches = new ThreadPoolExecutor(4, 4, keepAliveTime, TimeUnit.MILLISECONDS, secondAreaQueue); //TODO: probably need to lower corepoolsize to 0 in order to make keepAliveTime effective
+        if(keepAliveTime == 0)//no branch shutdown
+            branches = new ThreadPoolExecutor(4, 4, keepAliveTime, TimeUnit.MILLISECONDS, secondAreaQueue);
+        else //branch shutdown
+            branches = new ThreadPoolExecutor(0, 4, keepAliveTime, TimeUnit.MILLISECONDS, secondAreaQueue); //TODO: probably need to lower corepoolsize to 0 in order to make keepAliveTime effective
         mainAreaQueue = Objects.requireNonNullElseGet(initQueue, LinkedBlockingQueue::new); //(REQUIRES JAVA 9) if null queue is passed, it is ignored
         branches.prestartAllCoreThreads(); //start all worker threads
         this.maxPeopleSecondArea = maxPeopleSecondArea; //set the number
@@ -34,7 +37,7 @@ public class Office {
     //closes the postal office
     public void close(){
         officeThread.interrupt();
-        System.out.println("Shutting down");
+        System.out.println("Shutting down office thread");
 
     }
 
@@ -57,12 +60,14 @@ public class Office {
                         branches.execute(mainAreaQueue.take());
                     } catch (InterruptedException e) {
                         branches.shutdown();
+                        System.out.println("Shutting down threadpool");
                         return;
                     }
                 }
             }
 
             branches.shutdown();
+            System.out.println("Shutting down threadpool");
         }
     }
 
