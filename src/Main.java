@@ -1,3 +1,5 @@
+//Alessio Galatolo 564857 Corso B AA 19/20
+
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class Main {
