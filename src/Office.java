@@ -23,27 +23,16 @@ public class Office {
         }else { //branch shutdown
             branches = new ThreadPoolExecutor(1, 4, keepAliveTime, TimeUnit.MILLISECONDS, secondAreaQueue);
         }
-        //branches.prestartAllCoreThreads(); //start all worker threads
+        branches.prestartAllCoreThreads(); //start all worker threads
         mainAreaQueue = Objects.requireNonNullElseGet(initQueue, LinkedBlockingQueue::new); //(REQUIRES JAVA 9) if null queue is passed it creates a new one
 
-        System.out.print("Active threads on construct: ");
-        System.out.println(Thread.activeCount());
     }
 
     //opens the postal office, now the people will be loaded into the internal queue and it is available a continuous flow
     public void open(){
-        System.out.print("Active threads before thread activation: ");
-        System.out.println(Thread.activeCount());
         officeThread = new Thread(new OfficeTask());
-        System.out.println(branches.getActiveCount());
         officeThread.start();
-        System.out.print("Active threads on thread activation: ");
-        System.out.println(Thread.activeCount());
 
-    }
-
-    public void getOpenBranches(){
-        System.out.println("Active Threads: " + branches.getActiveCount() + "\t poolsize: " + branches.getPoolSize());
     }
 
 
@@ -64,10 +53,12 @@ public class Office {
     }
 
 
+    //thread for the office
     private class OfficeTask implements Runnable {
         @Override
         public void run() {
             while(!Thread.interrupted()){
+                //when there are some clients, if queue is not full OR some branch can be opened execute the task
                 if((branches.getQueue().size() < maxPeopleSecondArea || branches.getPoolSize() < branches.getMaximumPoolSize()) && !mainAreaQueue.isEmpty()) {
                     try {
                         branches.execute(mainAreaQueue.take());

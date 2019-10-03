@@ -7,7 +7,7 @@ public class Main {
         LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<>(); //queue of people entering postal office at opening
 
         //init person task
-        for(int i = 0; i < 10; i++){
+        for(int i = 0; i < 100; i++){
             try {
                 queue.put(new PostalTask(i));
             } catch (InterruptedException e) {
@@ -16,54 +16,47 @@ public class Main {
         }
 
         int k = 2; //max people in the second, smaller, area
-        //Office busyOffice = new Office(k, queue); //office with all threads always open
-        Office lazyOffice = new Office(k, queue, 1000); //office where the threads shutdown after 100ms
+        Office busyOffice = new Office(k, queue); //office with all threads always open
+        Office lazyOffice = new Office(k, queue, 500); //office where the threads shutdown after 500ms
 
-        lazyOffice.getOpenBranches();
-        //busyOffice.open();
+        busyOffice.open();
         lazyOffice.open();
-//
-//        try {
-//            Thread.sleep(5000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        System.out.print("Active threads after sleep: ");
-//        System.out.println(Thread.activeCount());
 
 
-        for(int i = 0; i < 10; i++) {
-            System.out.print("Active threads on first add cycle: ");
-            System.out.println(Thread.activeCount());
-            //busyOffice.addPerson(new PostalTask(i));
+        System.out.print("Active threads before first add cycle: ");
+        System.out.println(Thread.activeCount());
+        for(int i = 0; i < 100; i++) {
+            busyOffice.addPerson(new PostalTask(i));
             lazyOffice.addPerson(new PostalTask(i));
         }
-        lazyOffice.getOpenBranches();
+        System.out.print("Active threads after first add cycle: ");
+        System.out.println(Thread.activeCount());
 
+
+        //waits for some threads to be terminated
         try {
-            Thread.sleep(10000);
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         System.out.print("Active threads after sleep: ");
         System.out.println(Thread.activeCount());
-        lazyOffice.getOpenBranches();
 
-        for(int i = 0; i < 10; i++) {
-            System.out.print("Active threads on second add cycle: ");
-            System.out.println(Thread.activeCount());
-            //busyOffice.addPerson(new PostalTask(i));
+
+        for(int i = 0; i < 100; i++) {
+            busyOffice.addPerson(new PostalTask(i));
             lazyOffice.addPerson(new PostalTask(i));
         }
+        System.out.print("Active threads after second add cycle: ");
+        System.out.println(Thread.activeCount());
 
-        lazyOffice.getOpenBranches();
 
 
 
-        //busyOffice.close();
+        busyOffice.close();
         lazyOffice.close();
         System.out.print("Active at the end: ");
-        System.out.println(Thread.activeCount());
+        System.out.println(Thread.activeCount()); //most threads should be still active
 
     }
 }
