@@ -9,6 +9,7 @@ class Doctor{
 
     }
 
+    //gets "lock", patient is allowed to do the visit
     public synchronized void startVisit(Urgency urgency){
         //declares its urgency
         urgencyCount[urgency.ordinal()]++;
@@ -30,6 +31,7 @@ class Doctor{
         visiting = true;
     }
 
+    //lock release, patient has done its visit
     public synchronized void endVisit(Urgency urgency){
         visiting = false;
         urgencyCount[urgency.ordinal()]--;
@@ -39,6 +41,7 @@ class Doctor{
         notify();
     }
 
+    //gets, from the waiting list, the urgency of the patient with the highest priority
     private Urgency getHighestUrgency() {
         if(urgencyCount[2] != 0){
             return Urgency.RED;
@@ -51,10 +54,6 @@ class Doctor{
 
     public int getName() {
         return name;
-    }
-
-    public boolean isVisiting() {
-        return visiting;
     }
 
     public int getWaitingNumber(){
