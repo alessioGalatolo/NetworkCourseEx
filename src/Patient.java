@@ -5,15 +5,24 @@ public class Patient extends Thread {
 
 
     private final ArrayList<Doctor> doctors;
+    private String name;
+    private Urgency urgency;
 
-    public Patient(ArrayList<Doctor> d) {
-        this.doctors = d;
+    public Patient(String name, ArrayList<Doctor> d) {
+        doctors = d;
+        this.name = name;
     }
+
+    public Patient(String name, Doctor d) {
+        doctors = new ArrayList<>();
+        doctors.add(d);
+    }
+
 
     @Override
     public void run() {
-        for(Doctor d: doctors){
-            d.startVisit();
+        for(Doctor d: doctors){ //waits for all the doctors
+            d.startVisit(urgency);
         }
 
         try {
@@ -24,7 +33,11 @@ public class Patient extends Thread {
         //TODO: patient returns again
 
         for(Doctor d: doctors){
-            d.endVisit();
+            d.endVisit(urgency);
         }
+    }
+
+    public Urgency getUrgency(){
+        return urgency;
     }
 }
