@@ -1,4 +1,4 @@
-//Alessio Galatolo 564857 Corso B AA 19/20
+package Postal_Office;//Alessio Galatolo 564857 Corso B AA 19/20
 
 import java.util.concurrent.LinkedBlockingQueue;
 

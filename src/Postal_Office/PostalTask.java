@@ -1,3 +1,5 @@
+package Postal_Office;
+
 public class PostalTask implements Runnable{
     //a simple task which mimics the operations of a client
 
