@@ -22,7 +22,7 @@ class Doctor{
             //the visits starts only if there is no one inside && there isn't anyone with a higher priority waiting
 
             try {
-                wait();
+                wait(100L);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

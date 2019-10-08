@@ -75,5 +75,5 @@ public class EmergencyRoom {
     }
 
     //exception for invalid use of addPatient
-    private class IllegalPatientException extends Exception{}
+    public class IllegalPatientException extends Exception{}
 }

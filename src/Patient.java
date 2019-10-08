@@ -2,6 +2,8 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.Random;
 
+import static java.lang.Math.abs;
+
 public class Patient extends Thread {
 
 
@@ -35,12 +37,14 @@ public class Patient extends Thread {
 
             //waits for all the doctors
             for (Doctor d : doctors) {
+                //System.out.println("Patient: " + name + ", waiting for doctor " + d.getName());
                 d.startVisit(urgency);
+                //System.out.println("Patient: " + name + ", got doctor " + d.getName());
             }
 
             //emulating the time for a visit
             try {
-                Thread.sleep(GregorianCalendar.getInstance().getTimeInMillis() % 1000);
+                Thread.sleep(abs(GregorianCalendar.getInstance().getTimeInMillis() % 1000));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -57,5 +61,6 @@ public class Patient extends Thread {
                 e.printStackTrace();
             }
         }
+        System.out.println("Patient " + name + " has done");
     }
 }
