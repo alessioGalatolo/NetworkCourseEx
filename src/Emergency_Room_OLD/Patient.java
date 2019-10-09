@@ -1,3 +1,5 @@
+package Emergency_Room_OLD;
+
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.Random;
@@ -6,29 +8,28 @@ import static java.lang.Math.abs;
 public class Patient extends Thread {
 
 
-    private EmergencyRoom er;
-    private int doctor = 0;
+    private final ArrayList<Doctor> doctors;
     private String name;
     private Urgency urgency;
     private int visits; //number of visits per patient
 
-    public Patient(String name, Urgency u, EmergencyRoom er) {
+    public Patient(String name, ArrayList<Doctor> d, Urgency u) {
+        doctors = d;
         urgency = u;
-        this.er = er;
         this.name = name;
-
-
-        Random random = new Random(GregorianCalendar.getInstance().getTimeInMillis()); //random with time seed
-
-        if(u == Urgency.YELLOW){
-            doctor = random.nextInt(10);
-        }
-
-        //assignes visit
-        visits = random.nextInt(15);
+        Random random = new Random();
+        visits = random.nextInt() % 15;
     }
 
+    public Patient(String name, Doctor d, Urgency u) {
+        doctors = new ArrayList<>();
+        doctors.add(d);
+        this.name = name;
+        urgency = u;
 
+        Random random = new Random();
+        visits = random.nextInt() % 15;
+    }
 
 
     @Override
@@ -36,7 +37,11 @@ public class Patient extends Thread {
         for(int i = 0; i < visits; i++) {
 
             //waits for all the doctors
-            er.startVisit(this);
+            for (Doctor d : doctors) {
+                //System.out.println("Emergency_Room_OLD.Patient: " + name + ", waiting for doctor " + d.getName());
+                d.startVisit(urgency);
+                //System.out.println("Emergency_Room_OLD.Patient: " + name + ", got doctor " + d.getName());
+            }
 
             //emulating the time for a visit
             try {
@@ -46,7 +51,9 @@ public class Patient extends Thread {
             }
 
 
-            er.endVisit(this);
+            for (Doctor d : doctors) {
+                d.endVisit(urgency);
+            }
 
             //patient waits for next visit
             try {
@@ -55,9 +62,6 @@ public class Patient extends Thread {
                 e.printStackTrace();
             }
         }
-    }
-
-    public int getDoctor() {
-        return doctor;
+        System.out.println("Emergency_Room_OLD.Patient " + name + " has done");
     }
 }

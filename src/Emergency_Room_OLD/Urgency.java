@@ -1,3 +1,5 @@
+package Emergency_Room_OLD;//enum representing the urgency of a patient
+
 public enum Urgency {
     WHITE(0),
     YELLOW(1),

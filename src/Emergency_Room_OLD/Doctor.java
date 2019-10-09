@@ -1,3 +1,5 @@
+package Emergency_Room_OLD;
+
 class Doctor{
     private final int name;
     private boolean visiting = false;
