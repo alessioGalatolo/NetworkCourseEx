@@ -60,4 +60,8 @@ public class Patient extends Thread {
     public int getDoctor() {
         return doctor;
     }
+
+    public Urgency getUrgency() {
+        return urgency;
+    }
 }
