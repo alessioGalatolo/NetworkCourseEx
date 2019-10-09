@@ -9,13 +9,15 @@ public class EmergencyRoom {
     public synchronized void startVisit(Patient patient) {
         switch(patient.getUrgency()){
             case WHITE:
-                while(redWaiting > 0 || getFreeDoctor() == -1){
+                int freeDoctor;
+                while(redWaiting > 0 || (freeDoctor = getFreeDoctor()) == -1){
                     try {
                         wait();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
+                patient.setDoctor(freeDoctor);
 
                 break;
             case YELLOW:
@@ -82,8 +84,8 @@ public class EmergencyRoom {
     public synchronized void endVisit(Patient patient) {
         switch(patient.getUrgency()){
             case WHITE:
-                break;
             case YELLOW:
+                busyDoctors[patient.getDoctor()] = false;
                 break;
             case RED:
                 currentRed = null;

@@ -24,7 +24,7 @@ public class Patient extends Thread {
             doctor = random.nextInt(10);
         }
 
-        //assignes visit
+        //assignees visit
         visits = random.nextInt(15);
     }
 
@@ -63,5 +63,10 @@ public class Patient extends Thread {
 
     public Urgency getUrgency() {
         return urgency;
+    }
+
+    public void setDoctor(int freeDoctor) {
+        if(urgency == Urgency.WHITE)
+            doctor = freeDoctor;
     }
 }
