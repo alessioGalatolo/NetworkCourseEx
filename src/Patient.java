@@ -25,7 +25,7 @@ public class Patient extends Thread {
         }
 
         //assignees visit
-        visits = random.nextInt(15);
+        visits = random.nextInt(5) + 1;
     }
 
 
@@ -36,11 +36,13 @@ public class Patient extends Thread {
         for(int i = 0; i < visits; i++) {
 
             //waits for all the doctors
+            //System.out.println("Patient " + name + " has requested its " + i + " visit");
             er.startVisit(this);
+
 
             //emulating the time for a visit
             try {
-                Thread.sleep(abs(GregorianCalendar.getInstance().getTimeInMillis() % 1000));
+                Thread.sleep(abs(GregorianCalendar.getInstance().getTimeInMillis() % 500));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -50,11 +52,12 @@ public class Patient extends Thread {
 
             //patient waits for next visit
             try {
-                Thread.sleep(GregorianCalendar.getInstance().getTimeInMillis() % 500);
+                Thread.sleep(abs(GregorianCalendar.getInstance().getTimeInMillis() % 100));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+        System.out.println("Patient " + name + " has done its visit");
     }
 
     public int getDoctor() {

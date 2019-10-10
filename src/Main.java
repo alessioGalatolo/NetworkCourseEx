@@ -1,5 +1,4 @@
-import java.util.GregorianCalendar;
-import java.util.Random;
+
 import java.util.Scanner;
 
 public class Main {
@@ -11,23 +10,21 @@ public class Main {
         int yellowCodes = scanner.nextInt();
         int redCodes = scanner.nextInt();
 
-
-        Random randomGen = new Random(GregorianCalendar.getInstance().getTimeInMillis()); //random generator for the doctor of yellow code
         EmergencyRoom er = new EmergencyRoom();
 
 
         for(int i = 0; i < redCodes; i++){
-            Patient p = new Patient("patient" + i, Urgency.RED, er);
+            Patient p = new Patient("patientRed" + i, Urgency.RED, er);
             p.start();
         }
 
         for(int i = 0; i < yellowCodes; i++){
-            Patient p = new Patient("patient" + i, Urgency.YELLOW, er);
+            Patient p = new Patient("patientYellow" + i, Urgency.YELLOW, er);
             p.start();
         }
 
         for(int i = 0; i < whiteCodes; i++){
-            Patient p = new Patient("patient" + i, Urgency.WHITE, er);
+            Patient p = new Patient("patientWhite" + i, Urgency.WHITE, er);
             p.start();
         }
     }

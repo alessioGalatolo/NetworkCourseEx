@@ -1,16 +1,22 @@
 public class EmergencyRoom {
-    boolean[] busyDoctors = new boolean[10]; //represents the doctor from 1 to 10, the value is true if the doctor is visiting
-    Patient currentRed = null;
 
-    int redWaiting = 0; //number of red codes waiting
-    int[] yellowWaiting = new int[10]; //number of yellow codes waiting per doctor
+    private boolean[] busyDoctors = new boolean[10]; //represents the doctor from 1 to 10, the value is true if the doctor is visiting
+    private Patient currentRed = null;
+    private int redWaiting = 0; //number of red codes waiting
+    private int[] yellowWaiting = new int[10]; //number of yellow codes waiting per doctor
 
+    public EmergencyRoom(){
+        for(int i = 0; i < 10; i++){
+            yellowWaiting[i] = 0;
+            busyDoctors[i] = false;
+        }
+    }
 
     public synchronized void startVisit(Patient patient) {
         switch(patient.getUrgency()){
             case WHITE:
                 int freeDoctor;
-                while(redWaiting > 0 || (freeDoctor = getFreeDoctor()) == -1){
+                while(redWaiting > 0 || currentRed != null || (freeDoctor = getFreeDoctor()) == -1){
                     try {
                         wait();
                     } catch (InterruptedException e) {
@@ -22,7 +28,7 @@ public class EmergencyRoom {
                 break;
             case YELLOW:
                 yellowWaiting[patient.getDoctor()]++;
-                while(redWaiting > 0){
+                while(redWaiting > 0 || currentRed != null || busyDoctors[patient.getDoctor()]){
                     try {
                         wait();
                     } catch (InterruptedException e) {
@@ -30,13 +36,6 @@ public class EmergencyRoom {
                     }
                 }
 
-                while(busyDoctors[patient.getDoctor()]){
-                    try {
-                        wait();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
                 busyDoctors[patient.getDoctor()] = true;
                 yellowWaiting[patient.getDoctor()]--;
 
@@ -86,13 +85,14 @@ public class EmergencyRoom {
             case WHITE:
             case YELLOW:
                 busyDoctors[patient.getDoctor()] = false;
+                notifyAll();
                 break;
             case RED:
                 currentRed = null;
                 for(int i = 0; i < 10; i++){
                     busyDoctors[i] = false;
                 }
-                notify();
+                notifyAll();
                 break;
         }
     }
