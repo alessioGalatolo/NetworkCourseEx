@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.Random;
 import static java.lang.Math.abs;
@@ -21,7 +20,7 @@ public class Patient extends Thread {
         Random random = new Random(GregorianCalendar.getInstance().getTimeInMillis()); //random with time seed
 
         if(u == Urgency.YELLOW){
-            doctor = random.nextInt(10);
+            doctor = random.nextInt(Consts.N_DOCTORS);
         }
 
         //assignees visit
