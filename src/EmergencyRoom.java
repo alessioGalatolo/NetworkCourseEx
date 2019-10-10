@@ -99,11 +99,13 @@ public class EmergencyRoom {
     public synchronized void endVisit(Patient patient) {
         switch(patient.getUrgency()){
             case WHITE:
+                //white and yellow only have to release the doctor
             case YELLOW:
                 busyDoctors[patient.getDoctor()] = false;
                 notifyAll();
                 break;
             case RED:
+                //releases all the doctors
                 currentRed = null;
                 for(int i = 0; i < Consts.N_DOCTORS; i++){
                     busyDoctors[i] = false;

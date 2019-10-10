@@ -1,3 +1,5 @@
+//basic enum for the grade of urgency of a patient
+
 public enum Urgency {
     WHITE(0),
     YELLOW(1),
