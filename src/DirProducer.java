@@ -23,6 +23,7 @@ public class DirProducer extends Thread{
     }
 
     private void checkDir(File curFile) {
+        System.out.println("Working on " + curFile.getName());
         if(curFile.isDirectory()){
             lock.lock();
             dirQueue.add(curFile);
@@ -34,5 +35,6 @@ public class DirProducer extends Thread{
                 checkDir(tmpFile);
             }
         }
+        System.out.println(dirQueue.size());
     }
 }

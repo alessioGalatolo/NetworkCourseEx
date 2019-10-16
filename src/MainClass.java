@@ -24,17 +24,21 @@ public class MainClass {
         Condition isEmpty = lock.newCondition();
 
         DirConsumer[] dirConsumers = new DirConsumer[10];
-        for(DirConsumer dirConsumer: dirConsumers){
-            dirConsumer = new DirConsumer(fileQueue, lock, isEmpty);
-            dirConsumer.start();
-        }
+//        for(DirConsumer dirConsumer: dirConsumers){
+//            dirConsumer = new DirConsumer(fileQueue, lock, isEmpty);
+//            dirConsumer.start();
+//        }
+        DirConsumer dc = new DirConsumer(fileQueue, lock, isEmpty);
+        //dc.start();
 
         DirProducer dirProducer = new DirProducer(args[0], fileQueue, lock, isEmpty);
         dirProducer.run(); //runs in main thread
 
-        for(DirConsumer dirConsumer: dirConsumers){
-            dirConsumer.interrupt();
-        }
+        dirProducer.interrupt();
+//        for(DirConsumer dirConsumer: dirConsumers){
+//            dirConsumer.interrupt();
+//        }
+        System.out.println(fileQueue);
 
     }
 }
