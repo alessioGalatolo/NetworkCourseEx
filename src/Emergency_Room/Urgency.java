@@ -1,4 +1,4 @@
-//basic enum for the grade of urgency of a patient
+package Emergency_Room;//basic enum for the grade of urgency of a patient
 
 public enum Urgency {
     WHITE(0),

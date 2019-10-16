@@ -1,16 +1,13 @@
-//Alessio Galatolo 564857
-import java.util.Scanner;
+package Emergency_Room;//Alessio Galatolo 564857
 
 public class Main {
 
     public static void main(String[] args) {
+        //input from args, 3 ints representing the number of patients with each code. [WhiteCodes] [YellowCodes] [RedCodes]
 
-        //input from console
-        System.out.println("Please enter the number of white, yellow and red codes");
-        Scanner scanner = new Scanner(System.in);
-        int whiteCodes = scanner.nextInt();
-        int yellowCodes = scanner.nextInt();
-        int redCodes = scanner.nextInt();
+        int whiteCodes = Integer.parseInt(args[0]);
+        int yellowCodes = Integer.parseInt(args[1]);
+        int redCodes = Integer.parseInt(args[2]);
 
         EmergencyRoom er = new EmergencyRoom();
 

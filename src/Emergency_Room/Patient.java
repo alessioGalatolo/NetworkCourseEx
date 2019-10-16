@@ -1,3 +1,5 @@
+package Emergency_Room;
+
 import java.util.GregorianCalendar;
 import java.util.Random;
 import static java.lang.Math.abs;

@@ -1,4 +1,4 @@
-//class which emulates the emergency room, it also manages the doctors and acts as a monitor
+package Emergency_Room;//class which emulates the emergency room, it also manages the doctors and acts as a monitor
 
 public class EmergencyRoom {
 
