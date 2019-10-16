@@ -7,34 +7,32 @@ public class DirProducer extends Thread{
 
     private final LinkedList<File> dirQueue;
     private final Lock lock;
-    private File curFile;
+    private String dir;
     private final Condition isEmpty;
 
     public DirProducer(String dir, LinkedList<File> queue, Lock lock, Condition isEmpty){
         dirQueue = queue;
         this.lock = lock;
-        curFile = new File(dir);
+        this.dir = dir;
         this.isEmpty = isEmpty;
     }
 
     @Override
     public void run() {
-        checkDir(curFile);
+        checkDir(dir);
     }
 
-    private void checkDir(File curFile) {
-        System.out.println("Working on " + curFile.getName());
+    private void checkDir(String dir) {
+        File curFile = new File(dir);
         if(curFile.isDirectory()){
             lock.lock();
             dirQueue.add(curFile);
             isEmpty.signal();
             lock.unlock();
-            String[] files = curFile.list();
-            for (String file : files) {
-                File tmpFile = new File(file);
-                checkDir(tmpFile);
+            String[] fileNames = curFile.list();
+            for (String fileName : fileNames) {
+                checkDir(dir + "/" + fileName);
             }
         }
-        System.out.println(dirQueue.size());
     }
 }

@@ -1,7 +1,5 @@
 import java.io.File;
 import java.util.LinkedList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -29,7 +27,7 @@ public class MainClass {
 //            dirConsumer.start();
 //        }
         DirConsumer dc = new DirConsumer(fileQueue, lock, isEmpty);
-        //dc.start();
+        dc.start();
 
         DirProducer dirProducer = new DirProducer(args[0], fileQueue, lock, isEmpty);
         dirProducer.run(); //runs in main thread
@@ -38,7 +36,7 @@ public class MainClass {
 //        for(DirConsumer dirConsumer: dirConsumers){
 //            dirConsumer.interrupt();
 //        }
-        System.out.println(fileQueue);
+        //System.out.println(fileQueue);
 
     }
 }

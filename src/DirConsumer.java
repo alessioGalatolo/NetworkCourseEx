@@ -33,6 +33,8 @@ public class DirConsumer extends Thread {
             dirQueue.removeFirst();
             lock.unlock();
 
+            System.out.println(dirToCheck.getName());
+
             if (dirToCheck.isFile()) {
                 System.out.println("Error -> Consumer: trying to open a non dir");
             } else {
