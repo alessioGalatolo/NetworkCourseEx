@@ -27,9 +27,12 @@ public class DirProducer extends Thread{
         if(curFile.isDirectory()){
             lock.lock();
             dirQueue.add(curFile);
+            String[] fileNames = curFile.list();
             isEmpty.signal();
             lock.unlock();
-            String[] fileNames = curFile.list();
+            if(fileNames == null){
+                System.out.println(curFile.getName() + " is not a directory or an I/O error occurred, producer");
+            }else
             for (String fileName : fileNames) {
                 checkDir(dir + "/" + fileName);
             }

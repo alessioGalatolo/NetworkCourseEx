@@ -8,6 +8,7 @@ public class DirConsumer extends Thread {
     private final LinkedList<File> dirQueue;
     private final Lock lock;
     private final Condition isEmpty;
+    private boolean terminating = false;
 
     public DirConsumer(LinkedList<File> queue, Lock lock, Condition isEmpty){
         dirQueue = queue;
@@ -22,7 +23,7 @@ public class DirConsumer extends Thread {
 
             File dirToCheck;
             lock.lock();
-            if(isInterrupted() && dirQueue.isEmpty()){
+            if(terminating && dirQueue.isEmpty()){
                 //shutting down
                 lock.unlock();
                 return;
@@ -32,6 +33,7 @@ public class DirConsumer extends Thread {
                     isEmpty.await();
                 } catch (InterruptedException e) {
                     lock.unlock();
+                    terminating = true;
                     return;
                 }
             }
@@ -39,20 +41,23 @@ public class DirConsumer extends Thread {
             dirQueue.removeFirst();
             lock.unlock();
 
-//            System.out.println(dirToCheck.getName());
 
             if (dirToCheck.isFile()) {
                 System.out.println("Error -> Consumer: trying to open a non dir");
             } else {
                 String[] fileNames = dirToCheck.list();
-                for (String fileName : fileNames) {
-                    File tmpFile = new File(dirToCheck.getAbsolutePath() + "/" + fileName);
-                    if (tmpFile.isFile())
-                        System.out.println(this.getName() + " prints " + fileName);
-                    else if(!tmpFile.exists())
-                        System.out.println("error");
-                }
+                if(fileNames == null){
+                    System.out.println(dirToCheck.getName() + " is not a directory or an I/O error occurred");
+                }else
+                    for (String fileName : fileNames) {
+                        File tmpFile = new File(dirToCheck.getAbsolutePath() + "/" + fileName);
+                        if (tmpFile.isFile()) {
+                            System.out.println(fileName);
+                        }
+                    }
             }
+            if(interrupted())
+                terminating = true;
 
         }
     }
