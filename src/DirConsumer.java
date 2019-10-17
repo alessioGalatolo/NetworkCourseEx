@@ -22,10 +22,16 @@ public class DirConsumer extends Thread {
 
             File dirToCheck;
             lock.lock();
+            if(isInterrupted() && dirQueue.isEmpty()){
+                //shutting down
+                lock.unlock();
+                return;
+            }
             while (dirQueue.isEmpty()) {
                 try {
                     isEmpty.await();
                 } catch (InterruptedException e) {
+                    lock.unlock();
                     return;
                 }
             }
@@ -42,7 +48,7 @@ public class DirConsumer extends Thread {
                 for (String fileName : fileNames) {
                     File tmpFile = new File(dirToCheck.getAbsolutePath() + "/" + fileName);
                     if (tmpFile.isFile())
-                        System.out.println(fileName);
+                        System.out.println(this.getName() + " prints " + fileName);
                     else if(!tmpFile.exists())
                         System.out.println("error");
                 }

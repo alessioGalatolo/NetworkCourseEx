@@ -29,12 +29,11 @@ public class MainClass {
         DirProducer dirProducer = new DirProducer(args[0], fileQueue, lock, isEmpty);
         dirProducer.run(); //runs in main thread. When the control comes back to the main it means its time to interrupt the consumer threads
 
-        //while(!fileQueue.isEmpty());
-        //something is wrong
 
         for(DirConsumer dirConsumer: dirConsumers){
             dirConsumer.interrupt();
         }
+
         System.out.println(fileQueue);
 
     }
