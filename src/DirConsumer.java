@@ -18,7 +18,7 @@ public class DirConsumer extends Thread {
     @Override
     public void run() {
 
-        while(!Thread.interrupted()) {
+        while(true) { //thread terminates only when interrupted during lock waiting
 
             File dirToCheck;
             lock.lock();
@@ -33,16 +33,18 @@ public class DirConsumer extends Thread {
             dirQueue.removeFirst();
             lock.unlock();
 
-            System.out.println(dirToCheck.getName());
+//            System.out.println(dirToCheck.getName());
 
             if (dirToCheck.isFile()) {
                 System.out.println("Error -> Consumer: trying to open a non dir");
             } else {
                 String[] fileNames = dirToCheck.list();
                 for (String fileName : fileNames) {
-                    File tmpFile = new File(fileName);
+                    File tmpFile = new File(dirToCheck.getAbsolutePath() + "/" + fileName);
                     if (tmpFile.isFile())
                         System.out.println(fileName);
+                    else if(!tmpFile.exists())
+                        System.out.println("error");
                 }
             }
 
