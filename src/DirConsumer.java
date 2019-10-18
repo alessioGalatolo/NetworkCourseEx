@@ -1,5 +1,6 @@
 import java.io.File;
 import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
@@ -8,12 +9,13 @@ public class DirConsumer extends Thread {
     private final LinkedList<File> dirQueue;
     private final Lock lock;
     private final Condition isEmpty;
-    private boolean terminating = false;
+    private AtomicBoolean terminating;
 
-    public DirConsumer(LinkedList<File> queue, Lock lock, Condition isEmpty){
+    public DirConsumer(LinkedList<File> queue, Lock lock, Condition isEmpty, AtomicBoolean terminate){
         dirQueue = queue;
         this.lock = lock;
         this.isEmpty = isEmpty;
+        terminating = terminate;
     }
 
     @Override
@@ -23,7 +25,7 @@ public class DirConsumer extends Thread {
 
             File dirToCheck;
             lock.lock();
-            if(terminating && dirQueue.isEmpty()){
+            if(terminating.get() && dirQueue.isEmpty()){
                 //shutting down
                 lock.unlock();
                 return;
@@ -33,7 +35,7 @@ public class DirConsumer extends Thread {
                     isEmpty.await();
                 } catch (InterruptedException e) {
                     lock.unlock();
-                    terminating = true;
+//                    terminating = true;
                     return;
                 }
             }
@@ -56,8 +58,8 @@ public class DirConsumer extends Thread {
                         }
                     }
             }
-            if(interrupted())
-                terminating = true;
+//            if(interrupted())
+//                terminating = true;
 
         }
     }
