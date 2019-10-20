@@ -21,14 +21,14 @@ public class DirConsumer extends Thread {
     @Override
     public void run() {
 
-        while(true) { //thread terminates only when interrupted during lock waiting
+        while(true) {
 
             File dirToCheck;
             lock.lock();
             if(terminating.get() && dirQueue.isEmpty()){
                 //shutting down
                 lock.unlock();
-                System.out.println("shutting down " + getName() + dirQueue.isEmpty() + terminating.get() + dirQueue);
+//                System.out.println("shutting down " + getName() + dirQueue.isEmpty() + terminating.get() + dirQueue);
                 return;
             }
             while (dirQueue.isEmpty()) {
@@ -36,8 +36,8 @@ public class DirConsumer extends Thread {
                     isEmpty.await();
                 } catch (InterruptedException e) {
                     lock.unlock();
-//                    terminating.set(true);
-//                    return;
+                    terminating.set(true);
+                    return;
                 }
             }
             dirToCheck = dirQueue.getFirst();
@@ -59,8 +59,8 @@ public class DirConsumer extends Thread {
                         }
                     }
             }
-//            if(interrupted())
-//                terminating.set(true);
+            if(interrupted())
+                terminating.set(true);
 
         }
     }

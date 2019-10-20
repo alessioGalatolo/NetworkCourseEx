@@ -40,6 +40,10 @@ public class DirProducer extends Thread{
                 checkDir(dir + "/" + fileName);
             }
         }
+        lock.lock();
         terminate.set(true); //nothing to add anymore
+        //TODO: signal all
+        isEmpty.signalAll();
+        lock.unlock();
     }
 }
