@@ -28,6 +28,7 @@ public class DirConsumer extends Thread {
             if(terminating.get() && dirQueue.isEmpty()){
                 //shutting down
                 lock.unlock();
+                System.out.println("shutting down " + getName() + dirQueue.isEmpty() + terminating.get() + dirQueue);
                 return;
             }
             while (dirQueue.isEmpty()) {
@@ -35,8 +36,8 @@ public class DirConsumer extends Thread {
                     isEmpty.await();
                 } catch (InterruptedException e) {
                     lock.unlock();
-//                    terminating = true;
-                    return;
+//                    terminating.set(true);
+//                    return;
                 }
             }
             dirToCheck = dirQueue.getFirst();
@@ -59,7 +60,7 @@ public class DirConsumer extends Thread {
                     }
             }
 //            if(interrupted())
-//                terminating = true;
+//                terminating.set(true);
 
         }
     }

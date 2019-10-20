@@ -6,11 +6,11 @@ import java.util.concurrent.locks.Lock;
 
 public class DirProducer extends Thread{
 
-    private final LinkedList<File> dirQueue;
-    private final Lock lock;
-    private String dir;
-    private final Condition isEmpty;
-    private AtomicBoolean terminate;
+    private final LinkedList<File> dirQueue; //queue for the dir files
+    private final Lock lock; //lock to access the queue
+    private String dir; //the name of the initial directory
+    private final Condition isEmpty; //condition to signal when the queue is not empty anymore
+    private AtomicBoolean terminate; //Bool to make the consumer threads terminate
 
     public DirProducer(String dir, LinkedList<File> queue, Lock lock, Condition isEmpty, AtomicBoolean terminate){
         dirQueue = queue;
@@ -40,6 +40,6 @@ public class DirProducer extends Thread{
                 checkDir(dir + "/" + fileName);
             }
         }
-        terminate.set(true);
+        terminate.set(true); //nothing to add anymore
     }
 }
