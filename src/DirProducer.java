@@ -7,16 +7,16 @@ import java.util.concurrent.locks.Lock;
 public class DirProducer extends Thread{
 
     private final LinkedList<File> dirQueue; //queue for the dir files
-    private final Lock lock; //lock to access the queue
+    private final Lock queueLock; //queueLock to access the queue
     private String dir; //the name of the initial directory
-    private final Condition isEmpty; //condition to signal when the queue is not empty anymore
+    private final Condition queueIsEmpty; //condition to signal when the queue is not empty anymore
     private AtomicBoolean terminate; //Bool to make the consumer threads terminate
 
-    public DirProducer(String dir, LinkedList<File> queue, Lock lock, Condition isEmpty, AtomicBoolean terminate){
+    public DirProducer(String dir, LinkedList<File> queue, Lock queueLock, Condition queueIsEmpty, AtomicBoolean terminate){
         dirQueue = queue;
-        this.lock = lock;
+        this.queueLock = queueLock;
         this.dir = dir;
-        this.isEmpty = isEmpty;
+        this.queueIsEmpty = queueIsEmpty;
         this.terminate = terminate;
     }
 
@@ -25,25 +25,31 @@ public class DirProducer extends Thread{
         checkDir(dir);
     }
 
+
+    //rec fun to check all the subDirs
     private void checkDir(String dir) {
         File curFile = new File(dir);
+
+        //if is dir -> put in the queue
         if(curFile.isDirectory()){
-            lock.lock();
+            queueLock.lock();
             dirQueue.add(curFile);
-            String[] fileNames = curFile.list();
-            isEmpty.signal();
-            lock.unlock();
+
+            String[] fileNames = curFile.list(); //list of files inside the directory
+            queueIsEmpty.signal();//queue is not empty anymore
+            queueLock.unlock();
+
             if(fileNames == null){
                 System.out.println(curFile.getName() + " is not a directory or an I/O error occurred, producer");
             }else
             for (String fileName : fileNames) {
+                //rec call
                 checkDir(dir + "/" + fileName);
             }
         }
-        lock.lock();
-        terminate.set(true); //nothing to add anymore
-        //TODO: signal all
-        isEmpty.signalAll();
-        lock.unlock();
+        queueLock.lock();
+        terminate.set(true); //nothing to add anymore, consumers can start to shutdown
+        queueIsEmpty.signalAll(); //wakes all the consumer to make them shutdown
+        queueLock.unlock();
     }
 }
