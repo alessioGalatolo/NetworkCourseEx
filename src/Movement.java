@@ -7,7 +7,6 @@ public class Movement {
     public Movement(Date date, Cause cause){
         this.date = date;
         this.cause = cause;
-
     }
 
 }
