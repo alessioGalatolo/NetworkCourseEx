@@ -24,7 +24,20 @@ public class BankAccount {
 
     public void writeToFile(FileChannel outChannel){
         byte[] jsonObj = gson.toJson(this).getBytes();
+        ByteBuffer lengthByteBuffer = ByteBuffer.allocate(Consts.INT_SIZE);
+        System.out.println("obj size " + jsonObj.length);
+        lengthByteBuffer.putInt(jsonObj.length);
         ByteBuffer byteBuffer = ByteBuffer.wrap(jsonObj);
+
+        lengthByteBuffer.flip();
+
+        while(lengthByteBuffer.hasRemaining()) {
+            try {
+                outChannel.write(lengthByteBuffer);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         while (byteBuffer.hasRemaining()) {
             try {
@@ -37,8 +50,12 @@ public class BankAccount {
     }
 
     public static BankAccount readFromFile(FileChannel inChannel) throws IOException {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+        ByteBuffer lengthByteBuffer = ByteBuffer.allocate(Consts.INT_SIZE);
 
+        inChannel.read(lengthByteBuffer);
+
+        lengthByteBuffer.flip();
+        ByteBuffer byteBuffer = ByteBuffer.allocate(lengthByteBuffer.getInt());
 
         inChannel.read(byteBuffer);
 //        MappedByteBuffer buffer = inChannel.map(FileChannel.MapMode.READ_ONLY, 0, inChannel.size());
