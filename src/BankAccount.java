@@ -22,10 +22,13 @@ public class BankAccount {
         movementList.add(m);
     }
 
+    public List<Movement> getMovementList() {
+        return movementList;
+    }
+
     public void writeToFile(FileChannel outChannel){
         byte[] jsonObj = gson.toJson(this).getBytes();
         ByteBuffer lengthByteBuffer = ByteBuffer.allocate(Consts.INT_SIZE);
-        System.out.println("obj size " + jsonObj.length);
         lengthByteBuffer.putInt(jsonObj.length);
         ByteBuffer byteBuffer = ByteBuffer.wrap(jsonObj);
 
@@ -60,10 +63,10 @@ public class BankAccount {
         inChannel.read(byteBuffer);
 //        MappedByteBuffer buffer = inChannel.map(FileChannel.MapMode.READ_ONLY, 0, inChannel.size());
 //        buffer.load();
-        gson.fromJson(Arrays.toString(byteBuffer.array()), BankAccount[].class);
-        byteBuffer.clear(); // do something with the data and clear/compact it.
+        return gson.fromJson(new String(byteBuffer.array()), BankAccount.class);
+//        byteBuffer.clear(); // do something with the data and clear/compact it.
 
-        return null;
+//        return null;
     }
 
     @Override

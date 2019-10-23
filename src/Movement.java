@@ -9,4 +9,7 @@ public class Movement {
         this.cause = cause;
     }
 
+    public Cause getCause() {
+        return cause;
+    }
 }

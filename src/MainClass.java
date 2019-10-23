@@ -1,13 +1,14 @@
 //Alessio Galatolo 564857
 //For the convertion JSON-java the lib GSON has been used
 
-
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class MainClass {
 
@@ -15,18 +16,23 @@ public class MainClass {
 
         createBankAccountsFile();
 
-        FileChannel inChannel = null;
+        ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(Consts.N_THREADS);
+        BankAccountRetriever bankAccountRetriever = new BankAccountRetriever(threadPoolExecutor);
+        bankAccountRetriever.start();
 
         try {
-
-            inChannel = FileChannel.open(Paths.get(Consts.BANK_ACCOUNT_FILENAME), StandardOpenOption.READ);
-            System.out.println(BankAccount.readFromFile(inChannel));
-
-        } catch (IOException e) {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
+        System.out.println("F24 = " + GlobalVars.F24_counter);
+        System.out.println("Acc = " + GlobalVars.ACC_counter);
+        System.out.println("Transaction = " + GlobalVars.TRANS_counter);
+        System.out.println("Bancomat = " + GlobalVars.BANC_counter);
+        System.out.println("Postal = " + GlobalVars.POST_counter);
 
+        threadPoolExecutor.shutdown();
     }
 
     //creates file with bank accounts if not already existent
