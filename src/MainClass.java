@@ -1,6 +1,3 @@
-//Alessio Galatolo 564857
-//For the convertion JSON-java the lib GSON has been used
-
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.file.FileAlreadyExistsException;
@@ -11,17 +8,22 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+//Alessio Galatolo 564857
+//For the convertion JSON-java the lib GSON has been used
+
 public class MainClass {
 
     public static void main(String[] args) {
         //accepts input for number of bank accounts and number of movements
 
 
-        //checks for the argument
+        //checks for the existence of the argument
         try {
             GlobalVars.N_BANK_ACCOUNTS = Integer.parseInt(args[0]);
             GlobalVars.N_MOVEMENTS_BASE = Integer.parseInt(args[1]);
+            GlobalVars.BANK_ACCOUNT_FILENAME = (GlobalVars.N_BANK_ACCOUNTS + GlobalVars.N_MOVEMENTS_BASE) + Consts.BANK_ACCOUNT_BASE_FILENAME;
         }catch (ArrayIndexOutOfBoundsException e){
+            //no arguments
             System.out.println("No init parameters found, using default ones");
         }
 
@@ -30,7 +32,7 @@ public class MainClass {
         System.out.println("Started movements causes count");
         ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(Consts.N_THREADS);
         BankAccountRetriever bankAccountRetriever = new BankAccountRetriever(threadPoolExecutor); //creates the producer
-        bankAccountRetriever.run(); //runs in main thread so that main methods gets back control only when all task has been queued
+        bankAccountRetriever.run(); //runs in main thread so that main methods gets back control only when all tasks have been queued
 
         //shuts down thread pool, all task already queued will be competed
         threadPoolExecutor.shutdown();
@@ -56,7 +58,7 @@ public class MainClass {
 
         //first checks file existence
         try {
-            outChannel = FileChannel.open(Paths.get(Consts.BANK_ACCOUNT_FILENAME), StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW);
+            outChannel = FileChannel.open(Paths.get(GlobalVars.BANK_ACCOUNT_FILENAME), StandardOpenOption.WRITE, StandardOpenOption.CREATE_NEW);
         } catch(FileAlreadyExistsException e){
             //file exists, skip creation
             System.out.println("Found file with list of Bank Accounts, skipping creation");
@@ -68,7 +70,7 @@ public class MainClass {
         //file not found, creating one
         System.out.println("No file found with the list of bank accounts, starting creation");
         BankAccount[] bankAccounts = new BankAccount[GlobalVars.N_BANK_ACCOUNTS]; //arrays of bankAccounts
-        Random randomGen = new Random(GregorianCalendar.getInstance().getTimeInMillis());
+        Random randomGen = new Random(GregorianCalendar.getInstance().getTimeInMillis()); //random class used to generate the movements for each bank account
 
         for(int i = 0; i < GlobalVars.N_BANK_ACCOUNTS; i++){
             bankAccounts[i] = new BankAccount(Consts.BASE_NAME + i, movementsFactory(randomGen, GlobalVars.N_MOVEMENTS_BASE + i)); //creates obj
@@ -87,11 +89,11 @@ public class MainClass {
 
 
     //a random generator for the movement list
-    private static List<Movement> movementsFactory(Random random, int n){
+    private static List<Movement> movementsFactory(Random random, int n){ //n = number of movements to return
         ArrayList<Movement> movements = new ArrayList<>();
 
         for(int i = 0; i < n; i++){
-            Date randomDate = new Date(Math.abs(random.nextLong()) % (70L * 365 * 24 * 60 * 60 * 1000));
+            Date randomDate = new Date(Math.abs(random.nextLong()) % (70L * 365 * 24 * 60 * 60 * 1000)); //random generator for the date
             movements.add(new Movement(randomDate, Cause.getRandomCause()));
         }
 
