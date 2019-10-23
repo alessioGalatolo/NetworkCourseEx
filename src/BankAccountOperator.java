@@ -8,6 +8,7 @@ public class BankAccountOperator implements Runnable {
 
     @Override
     public void run() {
+        //updates global counters
         for(Movement movement: bankAccount.getMovementList()){
             switch (movement.getCause()){
                 case F24:

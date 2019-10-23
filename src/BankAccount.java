@@ -2,15 +2,14 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.Arrays;
 import java.util.List;
 
+//class for bank accounts
 public class BankAccount {
-    private String accountHolderName;
+    private String accountHolderName; //name
     private List<Movement> movementList;
-    private static Gson gson = new Gson();
+    private static Gson gson = new Gson(); //class for JSON-JAVA conversion
 
     public BankAccount(String accountHolderName, List<Movement> movementList){
         this.accountHolderName = accountHolderName;
@@ -18,7 +17,6 @@ public class BankAccount {
     }
 
     public void addMovement(Movement m){
-        //TODO: add movement check
         movementList.add(m);
     }
 
@@ -26,14 +24,17 @@ public class BankAccount {
         return movementList;
     }
 
+
+    //method for writing to file(java to json)
     public void writeToFile(FileChannel outChannel){
         byte[] jsonObj = gson.toJson(this).getBytes();
-        ByteBuffer lengthByteBuffer = ByteBuffer.allocate(Consts.INT_SIZE);
+        ByteBuffer lengthByteBuffer = ByteBuffer.allocate(Consts.INT_SIZE); //buffer to write object size to file
         lengthByteBuffer.putInt(jsonObj.length);
-        ByteBuffer byteBuffer = ByteBuffer.wrap(jsonObj);
+        ByteBuffer byteBuffer = ByteBuffer.wrap(jsonObj); //buffer to write object
 
         lengthByteBuffer.flip();
 
+        //writes obj size
         while(lengthByteBuffer.hasRemaining()) {
             try {
                 outChannel.write(lengthByteBuffer);
@@ -42,6 +43,7 @@ public class BankAccount {
             }
         }
 
+        //writes obj
         while (byteBuffer.hasRemaining()) {
             try {
                 outChannel.write(byteBuffer);
@@ -52,25 +54,22 @@ public class BankAccount {
 
     }
 
+    //reads from file(json to java)
     public static BankAccount readFromFile(FileChannel inChannel) throws IOException {
-        ByteBuffer lengthByteBuffer = ByteBuffer.allocate(Consts.INT_SIZE);
+        ByteBuffer lengthByteBuffer = ByteBuffer.allocate(Consts.INT_SIZE); //allocates a buffer to read an int
 
-        inChannel.read(lengthByteBuffer);
+        inChannel.read(lengthByteBuffer);//reads and int representing the size of the String for the obj
 
         lengthByteBuffer.flip();
         ByteBuffer byteBuffer = ByteBuffer.allocate(lengthByteBuffer.getInt());
 
-        inChannel.read(byteBuffer);
-//        MappedByteBuffer buffer = inChannel.map(FileChannel.MapMode.READ_ONLY, 0, inChannel.size());
-//        buffer.load();
-        return gson.fromJson(new String(byteBuffer.array()), BankAccount.class);
-//        byteBuffer.clear(); // do something with the data and clear/compact it.
+        inChannel.read(byteBuffer); //reads object
 
-//        return null;
+        return gson.fromJson(new String(byteBuffer.array()), BankAccount.class); //returns the converted object
     }
 
     @Override
     public String toString() {
-        return accountHolderName + movementList;
+        return accountHolderName;
     }
 }

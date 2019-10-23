@@ -1,5 +1,7 @@
 import java.util.Random;
 
+
+//enum for the cause of the movement, includes a method for a random generation of causes
 public enum Cause {
     TRANSFER,
     ACCREDITATION,

@@ -18,7 +18,11 @@ public class BankAccountRetriever extends Thread{
 
             FileChannel inChannel = FileChannel.open(Paths.get(Consts.BANK_ACCOUNT_FILENAME), StandardOpenOption.READ);
 
-            threadPoolExecutor.execute(new BankAccountOperator(BankAccount.readFromFile(inChannel)));
+            for(int i = 0; i < GlobalVars.N_BANK_ACCOUNTS; i++) {
+                threadPoolExecutor.execute(new BankAccountOperator(BankAccount.readFromFile(inChannel)));
+            }
+
+            inChannel.close();
 
         } catch (IOException e) {
             e.printStackTrace();

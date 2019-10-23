@@ -1,5 +1,7 @@
 import java.util.Date;
 
+
+//class for the movements
 public class Movement {
     private Date date;
     private Cause cause;
