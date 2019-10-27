@@ -1,4 +1,4 @@
-//global vars and counters
+package Bank_Accounts;//global vars and counters
 
 public class GlobalVars {
     public static int N_BANK_ACCOUNTS = 100;
