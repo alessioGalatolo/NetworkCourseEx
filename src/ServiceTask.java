@@ -21,17 +21,17 @@ public class ServiceTask implements Runnable {
             executeHTTPcmd(inputStream.readLine());
 
 
-
+//
             socket.close();
             inputStream.close();
-            outputStream.close();
+//            outputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
 
-    private void executeHTTPcmd(String readLine) throws IOException {
+    private void executeHTTPcmd(String readLine) {
         if(readLine != null){
             StringTokenizer stringTok = new StringTokenizer(readLine);
             switch (stringTok.nextToken()){
@@ -40,10 +40,32 @@ public class ServiceTask implements Runnable {
 //                    FileChannel fileChannel = FileChannel.open(Paths.get(filename), StandardOpenOption.READ);
 //                    fileChannel.
                     File file = new File(filename.substring(1));
-                    FileReader fileReader = new FileReader(file);
-                    char[] buf = new char[1000];
-                    fileReader.read(buf, 0, 1000);
-                    outputStream.write(buf, 0, 1000);
+                    FileReader fr = null;
+                    try {
+                        fr = new FileReader(file);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    BufferedReader bfr = new BufferedReader(fr);
+                    String line = null;
+                    try {
+                        outputStream.write("HTTP/1.1 200 OK\r\n");
+// Header...
+                        outputStream.write("Last-modified: Fri, 09 Aug 1996 14:21:40 GMT\r\n");
+                        outputStream.write("\r\n");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    while (true) {
+                        try {
+                            if ((line = bfr.readLine()) == null) break;
+                            System.out.println(line);
+                            outputStream.write(line);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                     break;
                 case "PUT":
                     break;
