@@ -9,9 +9,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class MainClass {
 
     public static void main(String[] args) {
-        //accepts input for number of bank accounts and number of movements
-
-
         //checks for the existence of the argument
         try {
 
