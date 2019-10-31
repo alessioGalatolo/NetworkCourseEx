@@ -18,7 +18,8 @@ public class ServiceTask implements Runnable {
     public void run() {
         try {
             HTTPInterpreter.HTTPMessage outcome = HTTPInterpreter.stringToHTTP(inputStream.readLine(), outputStream);
-            System.out.println("Received " + outcome.getRequestType().toString() + " request, the outcome was " + (outcome.getSuccessfulOutcome()? "successful" : "unsuccessful"));
+            if(outcome != null)
+                System.out.println("Received " + outcome.getRequestType().toString() + " request, the outcome was " + (outcome.getSuccessfulOutcome()? "successful" : "unsuccessful"));
             socket.close();
             inputStream.close();
             outputStream.close();

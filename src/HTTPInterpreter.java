@@ -7,7 +7,7 @@ public class HTTPInterpreter {
     public static HTTPMessage stringToHTTP(String s, OutputStream outputStream){
         if(s == null)
             return null;
-        
+
         StringTokenizer stringTok = new StringTokenizer(s);
         switch (stringTok.nextToken()){
             case "GET":
@@ -23,7 +23,7 @@ public class HTTPInterpreter {
                     }
                     //Header
                     outputStream.write("HTTP/1.1 200 OK\r\n".getBytes());
-//                    outputStream.write(("Last-modified: " + new Date(file.lastModified()) + "\r\n").getBytes());
+                    outputStream.write(("Last-modified: " + new Date(file.lastModified()) + "\r\n").getBytes());
                     outputStream.write(("Content-Type: " + getFileType(file.getName()) + "\r\n").getBytes());
                     outputStream.write(("Content-Length: " + file.length() + "\r\n").getBytes());
                     outputStream.write("\r\n".getBytes()); //end of header
@@ -51,7 +51,7 @@ public class HTTPInterpreter {
                     }
                     //Header
                     outputStream.write("HTTP/1.1 200 OK\r\n".getBytes());
-//                    outputStream.write(("Last-modified: " + new Date(file.lastModified()) + "\r\n").getBytes());
+                    outputStream.write(("Last-modified: " + new Date(file.lastModified()) + "\r\n").getBytes());
                     outputStream.write(("Content-Type: " + getFileType(file.getName()) + "\r\n").getBytes());
                     outputStream.write(("Content-Length: " + file.length() + "\r\n").getBytes());
                     outputStream.write("\r\n".getBytes()); //end of header
