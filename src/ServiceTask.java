@@ -6,12 +6,12 @@ public class ServiceTask implements Runnable {
 
     private final Socket socket;
     private BufferedReader inputStream;
-    private BufferedWriter outputStream;
+    private OutputStream outputStream;
 
     public ServiceTask(Socket socket) throws IOException {
         this.socket = socket;
         inputStream = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        outputStream = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        outputStream = socket.getOutputStream();
 
     }
 
@@ -40,26 +40,30 @@ public class ServiceTask implements Runnable {
 //                    FileChannel fileChannel = FileChannel.open(Paths.get(filename), StandardOpenOption.READ);
 //                    fileChannel.
                     File file = new File(filename.substring(1));
-                    FileReader fr = null;
+                    FileInputStream fr = null;
                     try {
-                        fr = new FileReader(file);
+                        fr = new FileInputStream(file);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
+                        return;
                     }
-                    BufferedReader bfr = new BufferedReader(fr);
-                    String line = null;
+//                    BufferedReader bfr = new BufferedReader(fr);
+                    int line;
                     try {
-                        outputStream.write("HTTP/1.1 200 OK\r\n");
-// Header...
-                        outputStream.write("Last-modified: Fri, 09 Aug 1996 14:21:40 GMT\r\n");
-                        outputStream.write("\r\n");
+                        //Header
+                        outputStream.write("HTTP/1.0 200 OK\r\n".getBytes());
+//                        outputStream.write("Last-modified: Fri, 09 Aug 1996 14:21:40 GMT\r\n");
+                        outputStream.write("Content-Type: image/jpg\r\n".getBytes());
+                        outputStream.write(("Content-Length: " + file.length() + "\r\n").getBytes());
+//                        System.out.println(file.length());
+                        outputStream.write("\r\n".getBytes()); //end of header
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-
+                    System.out.println("Reading" + file.getName());
                     while (true) {
                         try {
-                            if ((line = bfr.readLine()) == null) break;
+                            if ((line = fr.read()) == -1) break;
                             System.out.println(line);
                             outputStream.write(line);
                         } catch (IOException e) {
