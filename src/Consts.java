@@ -1,3 +1,4 @@
+//class containing the most used constants
 public final class Consts {
     public static final int INT_SIZE = 4;
     public static final int N_THREADS = 10;

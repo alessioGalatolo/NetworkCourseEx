@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.Socket;
 
+//A task to handle client requests
 public class ServiceTask implements Runnable {
 
     private final Socket socket;
@@ -18,11 +19,14 @@ public class ServiceTask implements Runnable {
     public void run() {
         try {
             HTTPInterpreter.HTTPMessage outcome = HTTPInterpreter.stringToHTTP(inputStream.readLine(), outputStream);
+
             if(outcome != null)
-                System.out.println("Received " + outcome.getRequestType().toString() + " request, the outcome was " + (outcome.getSuccessfulOutcome()? "successful" : "unsuccessful"));
+                System.out.println("Received " + outcome.getRequestType().toString() + " request, the outcome was " + outcome.getOutcome());
+
             socket.close();
             inputStream.close();
             outputStream.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }

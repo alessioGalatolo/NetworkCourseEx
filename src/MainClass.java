@@ -8,22 +8,19 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 public class MainClass {
 
+    //File available for request: 'myfile' and 'myfile.png'
     public static void main(String[] args) {
-        //checks for the existence of the argument
-        try {
 
-        }catch (ArrayIndexOutOfBoundsException e){
-            //no arguments
-            System.out.println("No init parameters found");
-        }
-
+        //threadpool for the worker threads
         ThreadPoolExecutor threadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(Consts.N_THREADS);
 
-        try(ServerSocket welcomeSocket = new ServerSocket(Consts.PORT)) {
+        try(ServerSocket welcomeSocket = new ServerSocket(Consts.PORT)) {//tries to open the socket
 
 
             while (true) {
                 Socket socket = welcomeSocket.accept();
+
+                //sends request to worker thread
                 threadPool.execute(new ServiceTask(socket));
             }
 
