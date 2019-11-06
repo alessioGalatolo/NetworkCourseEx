@@ -4,6 +4,11 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
+
+
+//The class to be executed is only MainClass (which automatically runs an instance of the client and the server)
+
+//Class representing the client
 public class MainClient {
 
     public static void main(String[] args) {
@@ -18,15 +23,18 @@ public class MainClient {
             e.printStackTrace();
         }
 
-        SocketAddress address = new InetSocketAddress(args[0], currentPort);
+        SocketAddress address = new InetSocketAddress(currentPort);
         try(SocketChannel client = SocketChannel.open(address)) {
 
+            System.out.println("Client socket connected");
+
             for(int i = 0; i < Consts.ARRAY_INIT_SIZE; i++){
-                String outputString = "This string,n " + i + " ,is to be sent to the server to be echoed";
+                String outputString = "The string n " + i + " will be sent to the server to be echoed";
+                System.out.println("Sent: " + outputString);
                 ByteBuffer outputBuffer = ByteBuffer.wrap(outputString.getBytes());
                 client.write(outputBuffer);
 
-                System.out.println(readline(client));
+                System.out.println(readLine(client));
             }
 
 //            ByteBuffer buffer = ByteBuffer.allocate(4);
@@ -49,7 +57,7 @@ public class MainClient {
         }
     }
 
-    private static String readline(SocketChannel client) {
+    private static String readLine(SocketChannel client) {
         ByteBuffer inputBuffer = ByteBuffer.allocate(Consts.ARRAY_INIT_SIZE);
 
         String finalString = "";

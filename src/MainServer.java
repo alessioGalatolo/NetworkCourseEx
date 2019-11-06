@@ -10,6 +10,9 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Set;
 
+//The class to be executed is only MainClass (which automatically runs an instance of the client and the server)
+
+//Class representing the server
 public class MainServer {
 
     public static void main(String[] args) {
@@ -42,35 +45,47 @@ public class MainServer {
                 Set<SelectionKey> readyKeys = selector.selectedKeys();
 
                 for(SelectionKey key: readyKeys){
+
                     readyKeys.remove(key); //removing key from the set
 
                     try {
                         if (key.isAcceptable()) {
                             //accept new connection
                             ServerSocketChannel server = (ServerSocketChannel) key.channel();
-                            SocketChannel client = server.accept();
-                            System.out.println("Accepted connection from " + client);
-                            client.configureBlocking(false);
-                            SelectionKey registerKey = client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
-                            registerKey.attach(ByteBuffer.allocate(Consts.ARRAY_INIT_SIZE));
+                            SocketChannel clientSocketChannel = server.accept();
+                            System.out.println("Accepted connection from " + clientSocketChannel);
+                            clientSocketChannel.configureBlocking(false);
+                            SelectionKey registerKey = clientSocketChannel.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                            ByteBuffer byteBuffer = ByteBuffer.allocate(Consts.ARRAY_INIT_SIZE);
+                            byteBuffer.flip();
+                            registerKey.attach(byteBuffer);
 
-                        } else if (key.isWritable()){
-                            SocketChannel currentSocketChannel = (SocketChannel) key.channel();
-                            ByteBuffer outputBuffer = (ByteBuffer) key.attachment();
-
-                            if(outputBuffer.hasRemaining()) {
-                                currentSocketChannel.write(outputBuffer);
-                            }
-                        }else if(key.isReadable()){
+                        }if(key.isReadable()){
+//                            System.out.println("Server: preparing to read");
                             SocketChannel currentSocketChannel = (SocketChannel) key.channel();
                             ByteBuffer inputBuffer = (ByteBuffer) key.attachment();
                             if(inputBuffer.hasRemaining()) //the buffer was ready for writing, flipping it to read
                                 inputBuffer.flip();
-                            currentSocketChannel.read(inputBuffer);
+                            System.out.println(inputBuffer);
+                            System.out.println("Read: " + currentSocketChannel.read(inputBuffer));
+                            Thread.sleep(200);
 
                             inputBuffer.flip(); //flips it to make it ready to write
+//                            System.out.println(inputBuffer.toString());
 
 //                            key.attach(inputBuffer);
+
+                        }if (key.isWritable()){
+//                            System.out.println("Server: preparing to write");
+                            SocketChannel currentSocketChannel = (SocketChannel) key.channel();
+                            ByteBuffer outputBuffer = (ByteBuffer) key.attachment();
+
+                            System.out.println(outputBuffer.hasRemaining());
+                            if(outputBuffer.hasRemaining()) {
+                                System.out.println(currentSocketChannel.write(outputBuffer));
+                            }
+
+                            Thread.sleep(200);
 
                         }
                     }catch (IOException ex) {
@@ -80,6 +95,8 @@ public class MainServer {
                         }catch (IOException cex) {
 
                         }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
             }
