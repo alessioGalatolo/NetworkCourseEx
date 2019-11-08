@@ -3,7 +3,8 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 
 //The class to be executed is only MainClass (which automatically runs an instance of the client and the server)
@@ -64,10 +65,10 @@ public class MainClient {
 
         try {
 
-            while(client.read(inputBuffer) != -1){
-                String s = String.valueOf(inputBuffer);
-                finalString = finalString.concat(s);
-            }
+            client.read(inputBuffer);
+            inputBuffer.flip();
+            String s = new String(StandardCharsets.UTF_8.decode(inputBuffer).array());
+            finalString = finalString.concat(s);
 
         } catch (IOException e) {
             e.printStackTrace();

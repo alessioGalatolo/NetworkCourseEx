@@ -8,6 +8,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.Arrays;
 import java.util.Set;
 
 //The class to be executed is only MainClass (which automatically runs an instance of the client and the server)
@@ -55,48 +56,53 @@ public class MainServer {
                             SocketChannel clientSocketChannel = server.accept();
                             System.out.println("Accepted connection from " + clientSocketChannel);
                             clientSocketChannel.configureBlocking(false);
-                            SelectionKey registerKey = clientSocketChannel.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                            SelectionKey registerKey = clientSocketChannel.register(selector, SelectionKey.OP_READ);
                             ByteBuffer byteBuffer = ByteBuffer.allocate(Consts.ARRAY_INIT_SIZE);
-                            byteBuffer.flip();
+                            System.out.println(byteBuffer);
+//                            byteBuffer.flip();
                             registerKey.attach(byteBuffer);
 
-                        }if(key.isReadable()){
+                        }else if(key.isReadable()){
 //                            System.out.println("Server: preparing to read");
                             SocketChannel currentSocketChannel = (SocketChannel) key.channel();
                             ByteBuffer inputBuffer = (ByteBuffer) key.attachment();
-                            if(inputBuffer.hasRemaining()) //the buffer was ready for writing, flipping it to read
-                                inputBuffer.flip();
-                            System.out.println(inputBuffer);
-                            System.out.println("Read: " + currentSocketChannel.read(inputBuffer));
-                            Thread.sleep(200);
 
-                            inputBuffer.flip(); //flips it to make it ready to write
+//                            if(inputBuffer.hasRemaining()) //the buffer was ready for writing, flipping it to read
+//                                inputBuffer.flip();
+                            currentSocketChannel.read(inputBuffer);
+                            inputBuffer.flip();
+                            SelectionKey selectionKey = currentSocketChannel.register(selector, SelectionKey.OP_WRITE);
+                            selectionKey.attach(inputBuffer);
+
+                            currentSocketChannel.write(inputBuffer);
+
+//                            inputBuffer.flip(); //flips it to make it ready to write
 //                            System.out.println(inputBuffer.toString());
 
 //                            key.attach(inputBuffer);
 
-                        }if (key.isWritable()){
+                        }else if (key.isWritable()){
 //                            System.out.println("Server: preparing to write");
                             SocketChannel currentSocketChannel = (SocketChannel) key.channel();
                             ByteBuffer outputBuffer = (ByteBuffer) key.attachment();
 
-                            System.out.println(outputBuffer.hasRemaining());
+//                            System.out.println(outputBuffer.hasRemaining());
                             if(outputBuffer.hasRemaining()) {
                                 System.out.println(currentSocketChannel.write(outputBuffer));
                             }
 
-                            Thread.sleep(200);
+                            outputBuffer.clear();
+                            SelectionKey selectionKey = currentSocketChannel.register(selector, SelectionKey.OP_READ);
+                            selectionKey.attach(outputBuffer);
 
                         }
-                    }catch (IOException ex) {
+                    }catch (IOException e) {
                         key.cancel();
                         try{
                             key.channel().close();
-                        }catch (IOException cex) {
-
+                        }catch (IOException ex) {
+                            ex.printStackTrace();
                         }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
                     }
                 }
             }
