@@ -35,7 +35,7 @@ public class MainClient {
                 ByteBuffer outputBuffer = ByteBuffer.wrap(outputString.getBytes());
                 client.write(outputBuffer);
 
-                System.out.println(readLine(client));
+                System.out.println("Received: " + readLine(client));
             }
 
 //            ByteBuffer buffer = ByteBuffer.allocate(4);

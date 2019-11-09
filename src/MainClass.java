@@ -11,10 +11,13 @@ public class MainClass {
         }
 
         Server server = new Server(new String[]{(Integer.valueOf(currentPort)).toString()});
-        Client client = new Client(new String[]{(Integer.valueOf(currentPort)).toString()});
 
         server.start();
-        client.start();
+
+        for(int i = 0; i < 50; i++) {
+            Client client = new Client(new String[]{(Integer.valueOf(currentPort)).toString()});
+            client.start();
+        }
 
     }
 
