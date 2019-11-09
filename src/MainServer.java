@@ -36,78 +36,18 @@ public class MainServer {
             ServerSocket serverSocket = serverChannel.socket();
             InetSocketAddress address = new InetSocketAddress(currentPort);
             serverSocket.bind(address); //binds address
-            serverChannel.configureBlocking(false);
-            serverChannel.register(selector, SelectionKey.OP_ACCEPT);
+            serverChannel.configureBlocking(true);
 
             while (true) {
 
-                selector.select(); //blocking request
+                SocketChannel newConnection = serverChannel.accept();
 
-                Set<SelectionKey> readyKeys = selector.selectedKeys();
+                EchoServerWorker echoServerWorker = new EchoServerWorker(newConnection);
+                echoServerWorker.start();
 
-                for(SelectionKey key: readyKeys){
-
-                    readyKeys.remove(key); //removing key from the set
-
-                    try {
-                        if (key.isAcceptable()) {
-                            //accept new connection
-                            ServerSocketChannel server = (ServerSocketChannel) key.channel();
-                            SocketChannel clientSocketChannel = server.accept();
-                            System.out.println("Accepted connection from " + clientSocketChannel);
-                            clientSocketChannel.configureBlocking(false);
-                            SelectionKey registerKey = clientSocketChannel.register(selector, SelectionKey.OP_READ);
-                            ByteBuffer byteBuffer = ByteBuffer.allocate(Consts.ARRAY_INIT_SIZE);
-                            System.out.println(byteBuffer);
-//                            byteBuffer.flip();
-                            registerKey.attach(byteBuffer);
-
-                        }else if(key.isReadable()){
-//                            System.out.println("Server: preparing to read");
-                            SocketChannel currentSocketChannel = (SocketChannel) key.channel();
-                            ByteBuffer inputBuffer = (ByteBuffer) key.attachment();
-
-//                            if(inputBuffer.hasRemaining()) //the buffer was ready for writing, flipping it to read
-//                                inputBuffer.flip();
-                            currentSocketChannel.read(inputBuffer);
-                            inputBuffer.flip();
-                            SelectionKey selectionKey = currentSocketChannel.register(selector, SelectionKey.OP_WRITE);
-                            selectionKey.attach(inputBuffer);
-
-                            currentSocketChannel.write(inputBuffer);
-
-//                            inputBuffer.flip(); //flips it to make it ready to write
-//                            System.out.println(inputBuffer.toString());
-
-//                            key.attach(inputBuffer);
-
-                        }else if (key.isWritable()){
-//                            System.out.println("Server: preparing to write");
-                            SocketChannel currentSocketChannel = (SocketChannel) key.channel();
-                            ByteBuffer outputBuffer = (ByteBuffer) key.attachment();
-
-//                            System.out.println(outputBuffer.hasRemaining());
-                            if(outputBuffer.hasRemaining()) {
-                                System.out.println(currentSocketChannel.write(outputBuffer));
-                            }
-
-                            outputBuffer.clear();
-                            SelectionKey selectionKey = currentSocketChannel.register(selector, SelectionKey.OP_READ);
-                            selectionKey.attach(outputBuffer);
-
-                        }
-                    }catch (IOException e) {
-                        key.cancel();
-                        try{
-                            key.channel().close();
-                        }catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                }
             }
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
             return;
         }
 
