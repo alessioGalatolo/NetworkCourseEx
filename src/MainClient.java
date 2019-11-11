@@ -4,10 +4,9 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 
-//The class to be executed is only MainClass (which automatically runs an instance of the client and the server)
+//The class to be executed is MainClass only (which automatically runs an instance of the client and the server)
 
 //Class representing the client
 public class MainClient {
@@ -29,52 +28,39 @@ public class MainClient {
 
             System.out.println("Client socket connected");
 
-            for(int i = 0; i < Consts.ARRAY_INIT_SIZE; i++){
-                String outputString = "The string n " + i + " will be sent to the server to be echoed";
-                System.out.println("Sent: " + outputString);
+            for(int i = 0; i < Consts.ARRAY_INIT_SIZE / 100; i++){
+                String outputString = Consts.CLIENT_MESSAGE(i);
+                System.out.println("Client has sent: " + outputString);
                 ByteBuffer outputBuffer = ByteBuffer.wrap(outputString.getBytes());
                 client.write(outputBuffer);
 
-                System.out.println("Received: " + readLine(client));
+                System.out.println("Client has received: " + readLine(client));
             }
 
-//            ByteBuffer buffer = ByteBuffer.allocate(4);
-//            IntBuffer view = buffer.asIntBuffer();
-//
-//            for (int expected = 0; ; expected++) {
-//                client.read(buffer);
-//                int actual = view.get();
-//                buffer.clear();
-//                view.rewind();
-//                if (actual != expected) {
-//                    System.err.println("Expected " + expected + "; was " +
-//                            actual);
-//                    break;
-//                }
-//                System.out.println(actual);
-//            }
         }catch(IOException e) {
             e.printStackTrace();
         }
     }
 
     private static String readLine(SocketChannel client) {
-        ByteBuffer inputBuffer = ByteBuffer.allocate(Consts.ARRAY_INIT_SIZE);
-
-        String finalString = "";
-
         try {
+            //read buffer size
+            ByteBuffer intBuffer = ByteBuffer.allocate(Consts.INT_SIZE);
+            client.read(intBuffer);
+            intBuffer.flip();
+
+            //allocate right buffer
+            ByteBuffer inputBuffer = ByteBuffer.allocate(intBuffer.getInt());
 
             client.read(inputBuffer);
             inputBuffer.flip();
-            String s = new String(StandardCharsets.UTF_8.decode(inputBuffer).array());
-            finalString = finalString.concat(s);
+            return new String(StandardCharsets.UTF_8.decode(inputBuffer).array()); //using UTF_8 decoding for right conversion
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return finalString;
+        return null;
     }
 
 }

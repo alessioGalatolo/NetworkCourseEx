@@ -14,7 +14,7 @@ public class MainClass {
 
         server.start();
 
-        for(int i = 0; i < 50; i++) {
+        for(int i = 0; i < Consts.N_CLIENTS; i++) {
             Client client = new Client(new String[]{(Integer.valueOf(currentPort)).toString()});
             client.start();
         }
