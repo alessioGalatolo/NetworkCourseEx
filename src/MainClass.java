@@ -1,6 +1,12 @@
+//Alessio Galatolo 564857
+
 public class MainClass {
 
+
+    //main class. launches an instance of the server and Consts.N_CLIENTS instances of the clients as new threads.
     public static void main(String[] args) {
+        //may get the port as an argument, in its absence uses the default one
+
 
         //checks for the existence of the argument
         int currentPort = Consts.SOCKET_PORT;
@@ -10,7 +16,7 @@ public class MainClass {
             System.out.println("No arguments were passed for the port, using " + Consts.SOCKET_PORT);
         }
 
-        Server server = new Server(new String[]{(Integer.valueOf(currentPort)).toString()});
+        Server server = new Server(new String[]{(Integer.valueOf(currentPort)).toString()}); //passing the same port to client and server
 
         server.start();
 
@@ -21,6 +27,7 @@ public class MainClass {
 
     }
 
+    //simple class to call main method of MainServer in a separate thread
     static class Server extends Thread{
 
         private String[] args;
@@ -35,6 +42,7 @@ public class MainClass {
         }
     }
 
+    //simple class to call main method of MainClient in a separate thread
     static class Client extends Thread{
 
         private String[] args;

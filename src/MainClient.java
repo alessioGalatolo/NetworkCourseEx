@@ -6,7 +6,7 @@ import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 
 
-//The class to be executed is MainClass only (which automatically runs an instance of the client and the server)
+//The class to be executed is MainClass only (which automatically runs an instance of client and server)
 
 //Class representing the client
 public class MainClient {
@@ -19,22 +19,22 @@ public class MainClient {
         int currentPort = Consts.SOCKET_PORT;
         try {
             currentPort = Integer.parseInt(args[0]);
-        } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();
+        } catch (IndexOutOfBoundsException ignored) {
+
         }
 
         SocketAddress address = new InetSocketAddress(currentPort);
         try(SocketChannel client = SocketChannel.open(address)) {
 
-            System.out.println("Client socket connected");
-
-            for(int i = 0; i < Consts.ARRAY_INIT_SIZE / 100; i++){
-                String outputString = Consts.CLIENT_MESSAGE(i);
-                System.out.println("Client has sent: " + outputString);
+            //writing a lot of strings to server
+            for(int i = 0; i < Consts.N_STRINGS; i++){
+                String outputString = Consts.CLIENT_MESSAGE(i); //constant string relying on the index passed
+//                System.out.println("Client has sent: " + outputString);
                 ByteBuffer outputBuffer = ByteBuffer.wrap(outputString.getBytes());
+
                 client.write(outputBuffer);
 
-                System.out.println("Client has received: " + readLine(client));
+                System.out.println("Client has received: " + readBytes(client));
             }
 
         }catch(IOException e) {
@@ -42,14 +42,16 @@ public class MainClient {
         }
     }
 
-    private static String readLine(SocketChannel client) {
+    //a simple method which reads and integer from the buffer representing the number of bytes to be read afterwards
+    //then returns the String corresponding to the bytes received
+    private static String readBytes(SocketChannel client) {
         try {
             //read buffer size
             ByteBuffer intBuffer = ByteBuffer.allocate(Consts.INT_SIZE);
             client.read(intBuffer);
             intBuffer.flip();
 
-            //allocate right buffer
+            //allocate right sized buffer
             ByteBuffer inputBuffer = ByteBuffer.allocate(intBuffer.getInt());
 
             client.read(inputBuffer);
@@ -58,9 +60,8 @@ public class MainClient {
 
         } catch (IOException e) {
             e.printStackTrace();
+            return null; //error, nothing has to be returned
         }
-
-        return null;
     }
 
 }
