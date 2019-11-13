@@ -8,6 +8,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.Arrays;
 import java.util.Iterator;
 
 //The class to be executed is only MainClass (which automatically runs an instance of the client and the server)
@@ -56,8 +57,6 @@ public class MainServer {
                             SocketChannel clientSocketChannel = server.accept();
                             System.out.println("Server has accepted connection from " + clientSocketChannel);
                             clientSocketChannel.configureBlocking(false);
-                            clientSocketChannel.register(selector, SelectionKey.OP_READ);
-
                         }else if(currentKey.isReadable()){
                             SocketChannel currentSocketChannel = (SocketChannel) currentKey.channel();
 
@@ -67,14 +66,28 @@ public class MainServer {
                                 //end of stream
                                 currentKey.cancel();
                             }else {
-                                SelectionKey selectionKey = currentSocketChannel.register(selector, SelectionKey.OP_WRITE); //register for writing
-                                selectionKey.attach(byteBuffer); //attach buffer
+                                byteBuffer.flip();
+
+                                byte[] lastBytes = (byte[]) currentKey.attachment();
+                                if(lastBytes != null){
+                                    byte[] largerByteArray = Arrays.copyOf(lastBytes, lastBytes.length + byteBuffer.limit());
+                                    byte[] lastByteRead = Arrays.copyOfRange(byteBuffer.array(), 0, byteBuffer.limit());
+                                    System.arraycopy(lastByteRead, 0, largerByteArray, lastBytes.length, lastByteRead.length);
+                                    SelectionKey writeKey = currentSocketChannel.register(selector, SelectionKey.OP_WRITE | SelectionKey.OP_READ); //register for writing
+                                    writeKey.attach(largerByteArray); //attach buffer
+                                }else{
+                                    SelectionKey writeKey = currentSocketChannel.register(selector, SelectionKey.OP_WRITE | SelectionKey.OP_READ); //register for writing
+                                    writeKey.attach(Arrays.copyOfRange(byteBuffer.array(), 0, byteBuffer.limit())); //attach buffer
+                                }
                             }
                         }else if (currentKey.isWritable()){
+                            //TODO: handle incomplete writes
+
                             //writing buffer attached to the key
                             SocketChannel currentSocketChannel = (SocketChannel) currentKey.channel();
-                            ByteBuffer byteBuffer = (ByteBuffer) currentKey.attachment();
-                            byteBuffer.flip();
+                            ByteBuffer byteBuffer = ByteBuffer.wrap((byte[]) currentKey.attachment());
+
+                            //byteBuffer.flip();
 
                             //sending first the size of the buffer to be allocated
                             ByteBuffer intBuffer = ByteBuffer.allocate(Consts.INT_SIZE);
