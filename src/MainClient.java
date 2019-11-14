@@ -23,12 +23,14 @@ public class MainClient {
 
         }
 
+        //socket init
         SocketAddress address = new InetSocketAddress(currentPort);
         try(SocketChannel client = SocketChannel.open(address)) {
 
             //writing a lot of strings to server
             for(int i = 0; i < Consts.N_STRINGS; i++){
-                String outputString = Consts.LONG_CLIENT_MESSAGE(i); //constant string relying on the index passed
+                String outputString = Consts.CLIENT_MESSAGE(i); //constant string relying on the index passed
+//                String outputString = Consts.LONG_CLIENT_MESSAGE(i); //string that exceeds the 1024 bytes
                 ByteBuffer outputBuffer = ByteBuffer.wrap(outputString.getBytes());
 
                 client.write(outputBuffer);
@@ -55,7 +57,7 @@ public class MainClient {
 
             client.read(inputBuffer);
             inputBuffer.flip();
-            return new String(StandardCharsets.UTF_8.decode(inputBuffer).array()); //using UTF_8 decoding for right conversion
+            return new String(inputBuffer.array(), StandardCharsets.UTF_8); //using UTF_8 decoding for right conversion
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -18,7 +18,7 @@ public class MainClass {
 
         Server server = new Server(new String[]{(Integer.valueOf(currentPort)).toString()}); //passing the same port to client and server
 
-        server.start();
+        server.start(); //server will keep running even after clients below have completed their requests
 
         for(int i = 0; i < Consts.N_CLIENTS; i++) {
             Client client = new Client(new String[]{(Integer.valueOf(currentPort)).toString()});

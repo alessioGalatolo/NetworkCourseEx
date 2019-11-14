@@ -11,7 +11,7 @@ import java.nio.channels.SocketChannel;
 import java.util.Arrays;
 import java.util.Iterator;
 
-//The class to be executed is only MainClass (which automatically runs an instance of the client and the server)
+//The class to be executed is MainClass only (which automatically runs an instance of the client and the server)
 
 //Class representing the server
 public class MainServer {
@@ -43,7 +43,8 @@ public class MainServer {
                 selector.select(); //blocking request
 
                 Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
-                //get ready keys
+
+                //check every ready key.
                 while (iterator.hasNext()){
 
                     SelectionKey currentKey = iterator.next();
@@ -55,13 +56,13 @@ public class MainServer {
 
                             ServerSocketChannel server = (ServerSocketChannel) currentKey.channel();
                             SocketChannel clientSocketChannel = server.accept();
-                            System.out.println("Server has accepted connection from " + clientSocketChannel);
+                            System.out.println("Server has accepted connection from " + clientSocketChannel.getRemoteAddress());
                             clientSocketChannel.configureBlocking(false);
                             clientSocketChannel.register(selector, SelectionKey.OP_READ); //expecting a write from the client as the new operation
 
                         }else if(currentKey.isReadable()){
                             /*
-                                socket read at most Consts.ARRAY_INIT_SIZE bytes and puts the bytes read as an
+                                socket reads at most Consts.ARRAY_INIT_SIZE bytes and puts the bytes read as an
                                 attachment to the the selectionKey. If an array of byte was already attached, they
                                 are joined and put back in the selectionKey.
                             */
@@ -74,28 +75,32 @@ public class MainServer {
                                 //end of stream
                                 currentKey.cancel();
                             }else {
+                                //something has been read
+
                                 byteBuffer.flip();
 
-                                byte[] lastBytes = (byte[]) currentKey.attachment();
+                                byte[] lastBytes = (byte[]) currentKey.attachment(); //getting previous pieces of message (if existent)
                                 if(lastBytes != null){
-                                    byte[] largerByteArray = Arrays.copyOf(lastBytes, lastBytes.length + byteBuffer.limit());
+                                    //an old attachment has been found
+
+                                    byte[] largerByteArray = Arrays.copyOf(lastBytes, lastBytes.length + byteBuffer.limit()); //returns bigger array
                                     byte[] lastByteRead = Arrays.copyOfRange(byteBuffer.array(), 0, byteBuffer.limit());
-                                    System.arraycopy(lastByteRead, 0, largerByteArray, lastBytes.length, lastByteRead.length);
-                                    SelectionKey writeKey = currentSocketChannel.register(selector, SelectionKey.OP_WRITE | SelectionKey.OP_READ); //register for writing
-                                    writeKey.attach(largerByteArray); //attach buffer
+                                    System.arraycopy(lastByteRead, 0, largerByteArray, lastBytes.length, lastByteRead.length); //joins arrays
+                                    currentKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE); //updates key with write op
+                                    currentKey.attach(largerByteArray); //attach buffer
                                 }else{
-                                    SelectionKey writeKey = currentSocketChannel.register(selector, SelectionKey.OP_WRITE | SelectionKey.OP_READ); //register for writing
-                                    writeKey.attach(Arrays.copyOfRange(byteBuffer.array(), 0, byteBuffer.limit())); //attach buffer
+                                    //no old attachment
+                                    currentKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                                    currentKey.attach(Arrays.copyOfRange(byteBuffer.array(), 0, byteBuffer.limit())); //attach buffer
                                 }
                             }
                         }else if (currentKey.isWritable()){
                             /*
                                 Checks the attachment of the selectionKey.
-                                if a byte[] is found -> allocates a byteBuffer and tries to write all. if an incomplete write happens, the remaining buffer is stored as an attachment
+                                if a byte[] is found -> allocates a byteBuffer and tries to write it all. if an incomplete write happens, the remaining buffer is stored as an attachment
                                 if a ByteBuffer is found -> an incomplete write happened, tries to complete it.
                              */
 
-                            //writing buffer attached to the key
                             SocketChannel currentSocketChannel = (SocketChannel) currentKey.channel();
 
                             ByteBuffer byteBuffer;
@@ -116,10 +121,11 @@ public class MainServer {
                             //writing buffer
                             currentSocketChannel.write(byteBuffer);
                             if(byteBuffer.hasRemaining()) {
-                                SelectionKey writeKey = currentSocketChannel.register(selector, SelectionKey.OP_WRITE); //expecting a write from the client as the new operation
-                                writeKey.attach(byteBuffer);
+                                currentKey.interestOps(SelectionKey.OP_WRITE); //expecting a write from the server as the new operation
+                                currentKey.attach(byteBuffer);
                             }else{
-                                currentSocketChannel.register(selector, SelectionKey.OP_READ);
+                                currentKey.interestOps(SelectionKey.OP_READ); //expecting a write from the client as the new operation
+                                currentKey.attach(null); //nothing to be kept
                             }
                         }else{
                             System.out.println("Key has not been recognised");
