@@ -57,6 +57,8 @@ public class MainServer {
                             SocketChannel clientSocketChannel = server.accept();
                             System.out.println("Server has accepted connection from " + clientSocketChannel);
                             clientSocketChannel.configureBlocking(false);
+                            clientSocketChannel.register(selector, SelectionKey.OP_READ); //expecting a write from the client as the new operation
+
                         }else if(currentKey.isReadable()){
                             /*
                                 socket read at most Consts.ARRAY_INIT_SIZE bytes and puts the bytes read as an
