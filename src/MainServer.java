@@ -58,9 +58,15 @@ public class MainServer {
                             System.out.println("Server has accepted connection from " + clientSocketChannel);
                             clientSocketChannel.configureBlocking(false);
                         }else if(currentKey.isReadable()){
+                            /*
+                                socket read at most Consts.ARRAY_INIT_SIZE bytes and puts the bytes read as an
+                                attachment to the the selectionKey. If an array of byte was already attached, they
+                                are joined and put back in the selectionKey.
+                            */
+
                             SocketChannel currentSocketChannel = (SocketChannel) currentKey.channel();
 
-                            ByteBuffer byteBuffer = ByteBuffer.allocate(Consts.ARRAY_INIT_SIZE); //if bytes to be read > Consts.ARRAY_INIT_SIZE the message will be split
+                            ByteBuffer byteBuffer = ByteBuffer.allocate(Consts.ARRAY_INIT_SIZE);
 
                             if(currentSocketChannel.read(byteBuffer) == -1) {
                                 //end of stream
@@ -81,13 +87,23 @@ public class MainServer {
                                 }
                             }
                         }else if (currentKey.isWritable()){
-                            //TODO: handle incomplete writes
+                            /*
+                                Checks the attachment of the selectionKey.
+                                if a byte[] is found -> allocates a byteBuffer and tries to write all. if an incomplete write happens, the remaining buffer is stored as an attachment
+                                if a ByteBuffer is found -> an incomplete write happened, tries to complete it.
+                             */
 
                             //writing buffer attached to the key
                             SocketChannel currentSocketChannel = (SocketChannel) currentKey.channel();
-                            ByteBuffer byteBuffer = ByteBuffer.wrap((byte[]) currentKey.attachment());
 
-                            //byteBuffer.flip();
+                            ByteBuffer byteBuffer;
+
+                            if(currentKey.attachment() instanceof ByteBuffer){
+                                byteBuffer = (ByteBuffer) currentKey.attachment();
+                            }else{
+                                byteBuffer = ByteBuffer.wrap((byte[]) currentKey.attachment());
+                            }
+
 
                             //sending first the size of the buffer to be allocated
                             ByteBuffer intBuffer = ByteBuffer.allocate(Consts.INT_SIZE);
@@ -97,8 +113,12 @@ public class MainServer {
 
                             //writing buffer
                             currentSocketChannel.write(byteBuffer);
-                            byteBuffer.clear();
-                            currentSocketChannel.register(selector, SelectionKey.OP_READ); //expecting a write from the client as the new operation
+                            if(byteBuffer.hasRemaining()) {
+                                SelectionKey writeKey = currentSocketChannel.register(selector, SelectionKey.OP_WRITE); //expecting a write from the client as the new operation
+                                writeKey.attach(byteBuffer);
+                            }else{
+                                currentSocketChannel.register(selector, SelectionKey.OP_READ);
+                            }
                         }else{
                             System.out.println("Key has not been recognised");
                         }

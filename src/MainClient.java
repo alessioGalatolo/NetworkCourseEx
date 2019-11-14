@@ -28,7 +28,7 @@ public class MainClient {
 
             //writing a lot of strings to server
             for(int i = 0; i < Consts.N_STRINGS; i++){
-                String outputString = Consts.LONG_CLIENT_MESSAGE(i); //constant string relying on the index passed
+                String outputString = Consts.CLIENT_MESSAGE(i); //constant string relying on the index passed
 //                System.out.println("Client has sent: " + outputString);
                 ByteBuffer outputBuffer = ByteBuffer.wrap(outputString.getBytes());
 
