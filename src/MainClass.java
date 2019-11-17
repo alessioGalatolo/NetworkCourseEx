@@ -20,6 +20,7 @@ public class MainClass {
 
         server.start(); //server will keep running even after clients below have completed their requests
 
+        //launching n clients
         for(int i = 0; i < Consts.N_CLIENTS; i++) {
             Client client = new Client(new String[]{(Integer.valueOf(currentPort)).toString()});
             client.start();

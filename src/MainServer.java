@@ -39,6 +39,7 @@ public class MainServer {
             serverChannel.configureBlocking(false);
             serverChannel.register(selector, SelectionKey.OP_ACCEPT);
 
+            //no termination is provided
             while (true) {
                 selector.select(); //blocking request
 

@@ -1,4 +1,6 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
@@ -27,10 +29,14 @@ public class MainClient {
         SocketAddress address = new InetSocketAddress(currentPort);
         try(SocketChannel client = SocketChannel.open(address)) {
 
-            //writing a lot of strings to server
+            //for console input
+            BufferedReader consoleInput = new BufferedReader(new InputStreamReader(System.in));
+
+            //writing n strings to the server (taking 10 lines from console)
             for(int i = 0; i < Consts.N_STRINGS; i++){
-                String outputString = Consts.CLIENT_MESSAGE(i); //constant string relying on the index passed
+//                String outputString = Consts.CLIENT_MESSAGE(i); //constant string relying on the index passed
 //                String outputString = Consts.LONG_CLIENT_MESSAGE(i); //string that exceeds the 1024 bytes
+                String outputString = consoleInput.readLine();
                 ByteBuffer outputBuffer = ByteBuffer.wrap(outputString.getBytes());
 
                 client.write(outputBuffer);
