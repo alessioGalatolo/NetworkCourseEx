@@ -1,5 +1,3 @@
-//class with most used constants
-
 public final class Consts {
     public static final int INT_SIZE = 4; //in bytes
     public static final int N_CLIENTS = 1;

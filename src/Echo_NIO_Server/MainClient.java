@@ -1,3 +1,5 @@
+package Echo_NIO_Server;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,7 +10,7 @@ import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 
 
-//The class to be executed is MainClass only (which automatically runs an instance of client and server)
+//The class to be executed is Echo_NIO_Server.MainClass only (which automatically runs an instance of client and server)
 
 //Class representing the client
 public class MainClient {
@@ -34,8 +36,8 @@ public class MainClient {
 
             //writing n strings to the server (taking 10 lines from console)
             for(int i = 0; i < Consts.N_STRINGS; i++){
-//                String outputString = Consts.CLIENT_MESSAGE(i); //constant string relying on the index passed
-//                String outputString = Consts.LONG_CLIENT_MESSAGE(i); //string that exceeds the 1024 bytes
+//                String outputString = Echo_NIO_Server.Consts.CLIENT_MESSAGE(i); //constant string relying on the index passed
+//                String outputString = Echo_NIO_Server.Consts.LONG_CLIENT_MESSAGE(i); //string that exceeds the 1024 bytes
                 String outputString = consoleInput.readLine();
                 ByteBuffer outputBuffer = ByteBuffer.wrap(outputString.getBytes());
 
