@@ -28,7 +28,7 @@ public class MainClass {
 
     }
 
-    //simple class to call main method of Echo_NIO_Server.MainServer in a separate thread
+    //simple class to call main method of Echo_NIO_Server.PingServer in a separate thread
     static class Server extends Thread{
 
         private String[] args;
@@ -43,7 +43,7 @@ public class MainClass {
         }
     }
 
-    //simple class to call main method of Echo_NIO_Server.MainClient in a separate thread
+    //simple class to call main method of Echo_NIO_Server.PingClient in a separate thread
     static class Client extends Thread{
 
         private String[] args;
