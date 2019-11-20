@@ -38,30 +38,19 @@ public class PingServer {
 
                 Random randomGenerator = new Random(GregorianCalendar.getInstance().getTimeInMillis());
 
-
-
                 if(abs(randomGenerator.nextLong() % 100) >= Consts.LOSS_CHANCE){
                     //random induced delay
                     long delay = abs(randomGenerator.nextLong() % Consts.MAX_SLEEP_TIME);
                     Thread.sleep(delay);
-                    System.out.println("PingServer: I decided to send back the following message with " + delay + "ms delay: " + new String(packet.getData(), 0, packet.getLength(), StandardCharsets.UTF_8));
+                    System.out.println("PingServer: " + packet.getAddress() + ":" + packet.getPort() + "> " + new String(packet.getData(), 0, packet.getLength(), StandardCharsets.UTF_8) + " ACTION: delayed " + delay + " ms");
 
+//                    packet.setAddress(packet.getAddress());
                     //setaddress????????????????????????????????????????????????
                     datagramSocket.send(packet);
                 }else{
                     //not sent
-                    System.out.println("PingServer: I decided NOT to send back the following message: " + new String(packet.getData(), 0, packet.getLength(), StandardCharsets.UTF_8));
+                    System.out.println("PingServer: " + packet.getAddress() + ":" + packet.getPort() + "> " + new String(packet.getData(), 0, packet.getLength(), StandardCharsets.UTF_8) + " ACTION: not sent");
                 }
-
-
-
-//                String[] message = new String(packet.getData(), StandardCharsets.UTF_8).split(" ");
-//                if(!message[0].equals("PING")){
-//                    //error
-//                }
-//                int sequenceNumber = Integer.parseInt(message[1]);
-//                int timestamp = Integer.parseInt(message[2]);
-
 
             }
 

@@ -26,7 +26,7 @@ public final class Consts {
         String returnString = "PingClient: " + seqNRange + " packets sent, " + survivedPackets + " packets received, ";
         int lossPercentage = round(((1 - ((float) survivedPackets / seqNRange)) * 100));
         returnString += lossPercentage + "% packet loss\n";
-        returnString += "PingClient: Round-trip (ms) min/avg/max = " + minDelay + "/" + round((float) delaySum * 100 / survivedPackets ) / 100 + "/" + maxDelay;
+        returnString += "PingClient: Round-trip (ms) min/avg/max = " + minDelay + "/" + round((float) delaySum * 100 / survivedPackets) / 100.0 + "/" + maxDelay;
         return returnString;
     }
 }
