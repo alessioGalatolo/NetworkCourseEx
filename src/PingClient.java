@@ -47,10 +47,9 @@ public class PingClient {
                 try {
                     datagramSocket.receive(packet);
                     String message = new String(packet.getData(), StandardCharsets.UTF_8);
-                    System.out.println("PingClient: sent " + message);
                     long oldTimestamp = Long.parseLong(message.split(" ")[2]);
                     long delay = GregorianCalendar.getInstance().getTimeInMillis() - oldTimestamp;
-                    System.out.println("PingClient: RTT = " + delay);
+                    System.out.println("PingClient: " + message + ": " + delay + " ms");
 
                     survivedPackets++;
                     delaySum += delay;
@@ -61,9 +60,7 @@ public class PingClient {
 
                 }catch (SocketTimeoutException e){
                     String message = new String(packet.getData(), StandardCharsets.UTF_8);
-                    System.out.println("PingClient: sent " + message);
-
-                    System.out.println("PingClient: RTT = *");
+                    System.out.println("PingClient: " + message + ": *");
                 }
             }
 
