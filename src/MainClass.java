@@ -1,3 +1,6 @@
+//Alessio Galatolo 564857
+
+
 public class MainClass {
 
     //main class. launches an instance of the server and Echo_NIO_Server.Consts.N_CLIENTS instances of the clients as new threads.
@@ -13,12 +16,11 @@ public class MainClass {
             System.out.println("No arguments were passed for the port, using " + Consts.SOCKET_PORT);
         }
 
-        Server server = new Server(new String[]{(Integer.valueOf(currentPort)).toString()}); //passing the same port to client and server
-
-        server.start(); //server will keep running even after clients below have completed their requests
-
         Client client = new Client(new String[]{Consts.SERVER_ADDRESS_NAME, (Integer.valueOf(currentPort)).toString()});
         client.start();
+
+        Server server = new Server(new String[]{(Integer.valueOf(currentPort)).toString()}); //passing the same port to client and server
+        server.start(); //server will keep running even after clients below have completed their requests
 
     }
 
