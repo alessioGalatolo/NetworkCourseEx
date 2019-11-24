@@ -1,30 +1,34 @@
-//Alessio Galatolo 564857
-
-
 public class MainClass {
 
-    //main class. launches an instance of the server and Echo_NIO_Server.Consts.N_CLIENTS instances of the clients as new threads.
+    //main class. launches an instance of the server and an instance of the client as new threads.
     public static void main(String[] args) {
-        //may get the port as an argument, in its absence uses the default one
 
+        String multicastAddress = Consts.MULTICAST_ADDRESS;
 
-        //checks for the existence of the argument
-        int currentPort = Consts.SOCKET_PORT;
-        try {
-            currentPort = Integer.parseInt(args[0]);
-        } catch (IndexOutOfBoundsException e) {
-            System.out.println("No arguments were passed for the port, using " + Consts.SOCKET_PORT);
+        try{
+            multicastAddress = args[0];
+        }catch (IndexOutOfBoundsException ignored){
+            System.out.println("No multicast address found, using default one");
         }
 
-        Client client = new Client(new String[]{Consts.SERVER_ADDRESS_NAME, (Integer.valueOf(currentPort)).toString()});
+
+        Server server = new Server(new String[]{multicastAddress}); //passing the same address to client and server
+        server.start();
+
+        Client client = new Client(new String[]{multicastAddress});
         client.start();
 
-        Server server = new Server(new String[]{(Integer.valueOf(currentPort)).toString()}); //passing the same port to client and server
-        server.start(); //server will keep running even after clients below have completed their requests
+
+        try {
+            Thread.sleep(Consts.TOTAL_RUNTIME);
+            server.interrupt();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 
-    //simple class to call main method of PingServer in a separate thread
+    //simple class to call main method of TimeServer in a separate thread
     static class Server extends Thread{
 
         private String[] args;
@@ -35,11 +39,11 @@ public class MainClass {
 
         @Override
         public void run() {
-            PingServer.main(args);
+            TimeServer.main(args);
         }
     }
 
-    //simple class to call main method of PingClient in a separate thread
+    //simple class to call main method of TimeClient in a separate thread
     static class Client extends Thread{
 
         private String[] args;
@@ -50,7 +54,7 @@ public class MainClass {
 
         @Override
         public void run() {
-            PingClient.main(args);
+            TimeClient.main(args);
         }
     }
 }

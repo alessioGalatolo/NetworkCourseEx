@@ -11,7 +11,7 @@ import java.nio.channels.SocketChannel;
 import java.util.Arrays;
 import java.util.Iterator;
 
-//The class to be executed is Echo_NIO_Server.MainClass only (which automatically runs an instance of the client and the server)
+//The class to be executed is Echo_NIO_Server.Ping_Service.MainClass only (which automatically runs an instance of the client and the server)
 
 //Class representing the server
 public class MainServer {
@@ -63,7 +63,7 @@ public class MainServer {
 
                         }else if(currentKey.isReadable()){
                             /*
-                                socket reads at most Echo_NIO_Server.Consts.ARRAY_INIT_SIZE bytes and puts the bytes read as an
+                                socket reads at most Echo_NIO_Server.Ping_Service.Consts.ARRAY_INIT_SIZE bytes and puts the bytes read as an
                                 attachment to the the selectionKey. If an array of byte was already attached, they
                                 are joined and put back in the selectionKey.
                             */

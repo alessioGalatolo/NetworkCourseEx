@@ -1,3 +1,5 @@
+package Ping_Service;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -17,11 +19,11 @@ public class PingServer {
             currentPort = Integer.parseInt(args[0]);
         } catch (IndexOutOfBoundsException e) {
             //no arguments
-            System.out.println("Usage: java PingServer port");
+            System.out.println("Usage: java Ping_Service.PingServer port");
             return;
         } catch (NumberFormatException e){
             //something was passed as an argument but could not be parsed to int
-            System.out.println("PingServer: Err -arg 0");
+            System.out.println("Ping_Service.PingServer: Err -arg 0");
             return;
         }
 
@@ -41,13 +43,13 @@ public class PingServer {
                     //random induced delay
                     long delay = abs(randomGenerator.nextLong() % Consts.MAX_SLEEP_TIME);
                     Thread.sleep(delay);
-                    System.out.println("PingServer: " + request.getAddress() + ":" + request.getPort() + "> " + new String(request.getData(), 0, request.getLength(), StandardCharsets.UTF_8) + " ACTION: delayed " + delay + " ms");
+                    System.out.println("Ping_Service.PingServer: " + request.getAddress() + ":" + request.getPort() + "> " + new String(request.getData(), 0, request.getLength(), StandardCharsets.UTF_8) + " ACTION: delayed " + delay + " ms");
 
                     DatagramPacket response = new DatagramPacket(request.getData(), request.getData().length, request.getAddress(), request.getPort());
                     datagramSocket.send(response);
                 }else{
                     //not sent
-                    System.out.println("PingServer: " + request.getAddress() + ":" + request.getPort() + "> " + new String(request.getData(), 0, request.getLength(), StandardCharsets.UTF_8) + " ACTION: not sent");
+                    System.out.println("Ping_Service.PingServer: " + request.getAddress() + ":" + request.getPort() + "> " + new String(request.getData(), 0, request.getLength(), StandardCharsets.UTF_8) + " ACTION: not sent");
                 }
 
             }

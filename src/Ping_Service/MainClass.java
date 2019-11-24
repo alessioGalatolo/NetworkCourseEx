@@ -1,7 +1,7 @@
-package Echo_NIO_Server;//Alessio Galatolo 564857
+package Ping_Service;//Alessio Galatolo 564857
+
 
 public class MainClass {
-
 
     //main class. launches an instance of the server and Echo_NIO_Server.Ping_Service.Consts.N_CLIENTS instances of the clients as new threads.
     public static void main(String[] args) {
@@ -16,19 +16,15 @@ public class MainClass {
             System.out.println("No arguments were passed for the port, using " + Consts.SOCKET_PORT);
         }
 
+        Client client = new Client(new String[]{Consts.SERVER_ADDRESS_NAME, (Integer.valueOf(currentPort)).toString()});
+        client.start();
+
         Server server = new Server(new String[]{(Integer.valueOf(currentPort)).toString()}); //passing the same port to client and server
-
         server.start(); //server will keep running even after clients below have completed their requests
-
-        //launching n clients
-        for(int i = 0; i < Consts.N_CLIENTS; i++) {
-            Client client = new Client(new String[]{(Integer.valueOf(currentPort)).toString()});
-            client.start();
-        }
 
     }
 
-    //simple class to call main method of Echo_NIO_Server.Ping_Service.PingServer in a separate thread
+    //simple class to call main method of Ping_Service.PingServer in a separate thread
     static class Server extends Thread{
 
         private String[] args;
@@ -39,11 +35,11 @@ public class MainClass {
 
         @Override
         public void run() {
-            MainServer.main(args);
+            PingServer.main(args);
         }
     }
 
-    //simple class to call main method of Echo_NIO_Server.Ping_Service.PingClient in a separate thread
+    //simple class to call main method of Ping_Service.PingClient in a separate thread
     static class Client extends Thread{
 
         private String[] args;
@@ -54,7 +50,7 @@ public class MainClass {
 
         @Override
         public void run() {
-            MainClient.main(args);
+            PingClient.main(args);
         }
     }
 }

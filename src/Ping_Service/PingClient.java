@@ -1,3 +1,5 @@
+package Ping_Service;
+
 import java.io.IOException;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
@@ -15,7 +17,7 @@ public class PingClient {
             serverName = args[0];
         } catch (IndexOutOfBoundsException e) {
             //no arguments for server name
-            System.out.println("Usage: java PingClient hostname port");
+            System.out.println("Usage: java Ping_Service.PingClient hostname port");
             return;
         }
 
@@ -24,7 +26,7 @@ public class PingClient {
             serverPort = Integer.parseInt(args[1]);
         }catch (IndexOutOfBoundsException | NumberFormatException e){
             //no arguments for server port
-            System.out.println("PingClient: Err -arg 1");
+            System.out.println("Ping_Service.PingClient: Err -arg 1");
             return;
         }
 
@@ -51,7 +53,7 @@ public class PingClient {
                     String message = new String(packet.getData(), StandardCharsets.UTF_8); //converts message
                     long oldTimestamp = Long.parseLong(message.split(" ")[2]); //gets old timestamp
                     long delay = GregorianCalendar.getInstance().getTimeInMillis() - oldTimestamp; //computes delay
-                    System.out.println("PingClient: " + message + ": " + delay + " ms"); //prints delay
+                    System.out.println("Ping_Service.PingClient: " + message + ": " + delay + " ms"); //prints delay
 
                     //update vars for stats
                     survivedPackets++;
@@ -65,7 +67,7 @@ public class PingClient {
                 }catch (SocketTimeoutException e){
                     //no data received
                     String message = new String(packet.getData(), StandardCharsets.UTF_8);
-                    System.out.println("PingClient: " + message + ": *");
+                    System.out.println("Ping_Service.PingClient: " + message + ": *");
                 }
             }
 
