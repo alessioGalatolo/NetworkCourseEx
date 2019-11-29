@@ -18,42 +18,42 @@ public class MainClass {
         }
 
 
-        Server server = new Server(new String[]{multicastAddress}); //passing the same address to client and server
-        server.start();
+        TServer server = new TServer(new String[]{String.valueOf(Consts.SOCKET_PORT)}); //passing the same address to client and server
+        server.run();
 
-        Client client = new Client(new String[]{multicastAddress});
+        TClient client = new TClient(new String[]{String.valueOf(Consts.SOCKET_PORT)});
         client.start();
 
 
     }
 
     //simple class to call main method of _____________ in a separate thread
-    static class Server extends Thread{
+    static class TServer extends Thread{
 
         private String[] args;
 
-        public Server(String[] args){
+        public TServer(String[] args){
             this.args = args;
         }
 
         @Override
         public void run() {
-            TimeServer.main(args);
+            Server.main(args);
         }
     }
 
     //simple class to call main method of _________________ in a separate thread
-    static class Client extends Thread{
+    static class TClient extends Thread{
 
         private String[] args;
 
-        public Client(String[] args){
+        public TClient(String[] args){
             this.args = args;
         }
 
         @Override
         public void run() {
-            TimeClient.main(args);
+            Client.main(args);
         }
     }
 }
