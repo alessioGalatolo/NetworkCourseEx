@@ -1,12 +1,10 @@
-import Multicast_Time_Server.Consts;
-import Multicast_Time_Server.TimeClient;
-import Multicast_Time_Server.TimeServer;
+package Multicast_Time_Server;
 
 public class MainClass {
 
     //main class. launches an instance of the server and an instance of the client as new threads.
     public static void main(String[] args) {
-        //may get the _________ address, in its absence it uses a default one
+        //may get the multicast address, in its absence it uses a default one
 
 
         String multicastAddress = Consts.MULTICAST_ADDRESS;
@@ -25,9 +23,16 @@ public class MainClass {
         client.start();
 
 
+        try {
+            Thread.sleep(Consts.TOTAL_RUNTIME); //Total runtime is an approximation of the time needed for the client to read all the dates
+            server.interrupt();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
-    //simple class to call main method of _____________ in a separate thread
+    //simple class to call main method of TimeServer in a separate thread
     static class Server extends Thread{
 
         private String[] args;
@@ -42,7 +47,7 @@ public class MainClass {
         }
     }
 
-    //simple class to call main method of _________________ in a separate thread
+    //simple class to call main method of TimeClient in a separate thread
     static class Client extends Thread{
 
         private String[] args;

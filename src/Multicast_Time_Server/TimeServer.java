@@ -1,11 +1,14 @@
+package Multicast_Time_Server;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.util.GregorianCalendar;
 
-public class TimeClient {
+public class TimeServer {
 
     public static void main(String[] args) {
         //Gets the multicast address as an argument
@@ -22,22 +25,23 @@ public class TimeClient {
             return;
         }
 
-        //opens multicast socket
-        try(MulticastSocket multicastSocket = new MulticastSocket(Consts.SOCKET_PORT)){
 
-            DatagramPacket packet = new DatagramPacket(new byte[Consts.ARRAY_INIT_SIZE], Consts.ARRAY_INIT_SIZE); //packet to be received
-            multicastSocket.setSoTimeout(Consts.UDP_TIMEOUT);
-            multicastSocket.joinGroup(multicastGroup);
+        try(DatagramSocket datagramSocket = new DatagramSocket()){
 
-            for(int i = 0; i < Consts.READS_N; i++){
-                multicastSocket.receive(packet);
-                System.out.println(new String(packet.getData(), packet.getOffset(), packet.getLength(), StandardCharsets.UTF_8)); //prints date for 10 times
+            byte[] message;
+
+            //terminates when interrupted
+            while (!Thread.interrupted()) {
+                message = GregorianCalendar.getInstance().getTime().toString().getBytes(StandardCharsets.UTF_8); //gets date
+
+                DatagramPacket datePacket = new DatagramPacket(message, 0, message.length, multicastGroup, Consts.SOCKET_PORT); //create the packet
+                datagramSocket.send(datePacket);
+                Thread.sleep(Consts.SLEEP_TIME); //sleeps for some time
             }
-
-            multicastSocket.leaveGroup(multicastGroup);
-
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (InterruptedException ignored) {
         }
+
     }
 }
