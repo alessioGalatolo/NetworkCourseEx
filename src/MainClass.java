@@ -1,7 +1,3 @@
-import Multicast_Time_Server.Consts;
-import Multicast_Time_Server.TimeClient;
-import Multicast_Time_Server.TimeServer;
-
 public class MainClass {
 
     //main class. launches an instance of the server and an instance of the client as new threads.
@@ -9,10 +5,10 @@ public class MainClass {
         //may get the _________ address, in its absence it uses a default one
 
 
-        String multicastAddress = Consts.MULTICAST_ADDRESS;
+        int socketPort = Consts.SOCKET_PORT;
 
         try{
-            multicastAddress = args[0];
+            socketPort = Integer.parseInt(args[0]);
         }catch (IndexOutOfBoundsException ignored){
             System.out.println("No multicast address found, using default one");
         }

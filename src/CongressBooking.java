@@ -17,17 +17,15 @@ public interface CongressBooking extends Remote {
     //data class for a session
     class Session implements Serializable {
         //TODO: change String[] size from constant speakers_per_session to the actual size
-        private String[] speakers;
-        int freeSpeakerSlot = Consts.SPEAKERS_PER_SESSION;
+        private String[] speakers = new String[0];
+//        int freeSpeakerSlot = Consts.SPEAKERS_PER_SESSION;
         private int time;
         private int day;
 
         //TODO: check obione error
 
         public Session(String[] speakers, int time, int day) {
-            this.speakers = new String[Consts.SPEAKERS_PER_SESSION];
-            System.arraycopy(speakers, 0, this.speakers, 0, speakers.length);
-            freeSpeakerSlot -= speakers.length;
+            this.speakers = speakers;
             this.time = time;
             this.day = day;
         }
@@ -41,13 +39,12 @@ public interface CongressBooking extends Remote {
         }
 
         public boolean hasFreeSpeakerSlot(int speakersNeeded){
-            System.out.println("IDK: " + speakersNeeded + freeSpeakerSlot);
-            return freeSpeakerSlot >= speakersNeeded;
+            return Consts.SPEAKERS_PER_SESSION - speakers.length >= speakersNeeded;
         }
 
-        public int getFreeSpeakerSlot() {
-            return freeSpeakerSlot;
-        }
+//        public int getFreeSpeakerSlot() {
+//            return freeSpeakerSlot;
+//        }
 
         public String[] getSpeakers() {
             return speakers;
@@ -56,9 +53,12 @@ public interface CongressBooking extends Remote {
 
         public void addSpeakers(String[] newSpeakers) {
             //TODO: add Index out of bound exception check
-            System.out.println("IDK: " + freeSpeakerSlot);
-            System.arraycopy(newSpeakers, 0, speakers, Consts.SPEAKERS_PER_SESSION - freeSpeakerSlot, newSpeakers.length);
-            freeSpeakerSlot -= newSpeakers.length;
+
+            String[] newArray = new String[speakers.length + newSpeakers.length];
+            System.arraycopy(speakers, 0, newArray, 0, speakers.length);
+            System.arraycopy(newSpeakers, 0, newArray, speakers.length, newSpeakers.length);
+            speakers = newArray;
+
         }
 
         @Override

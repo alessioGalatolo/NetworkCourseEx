@@ -15,14 +15,12 @@ public class CongressEasyBooking extends UnicastRemoteObject implements Congress
     @Override
     public boolean bookSession(Session session) {
         Session requestedSession = congressProgram[session.getDay()][session.getTime()];
-        if(requestedSession == null){ //no session -> free
-            System.out.println("entering null context");
+        if(requestedSession == null){
+            //no session -> free
             congressProgram[session.getDay()][session.getTime()] = session;
             return  true;
-        }else if(requestedSession.hasFreeSpeakerSlot(session.getFreeSpeakerSlot())){
+        }else if(requestedSession.hasFreeSpeakerSlot(session.getSpeakers().length)){
             //enough slots
-
-            System.out.println("entering not-null context");
             requestedSession.addSpeakers(session.getSpeakers());
             return true;
         }
