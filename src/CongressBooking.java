@@ -3,6 +3,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Arrays;
 
+//interface of the
 public interface CongressBooking extends Remote {
 
     //books the session requested
@@ -11,21 +12,22 @@ public interface CongressBooking extends Remote {
     boolean bookSession(Session session) throws RemoteException;
 
     //@returns: a list of all the session for the congress
-    Session[][] getDaySessions() throws RemoteException;
+    Session[][] getCongressProgram() throws RemoteException;
 
 
     //data class for a session
     class Session implements Serializable {
-        //TODO: change String[] size from constant speakers_per_session to the actual size
-        private String[] speakers = new String[0];
-//        int freeSpeakerSlot = Consts.SPEAKERS_PER_SESSION;
+        private String[] speakers;
         private int time;
         private int day;
 
-        //TODO: check obione error
 
         public Session(String[] speakers, int time, int day) {
-            this.speakers = speakers;
+            if(speakers.length > Consts.SPEAKERS_PER_SESSION)
+                this.speakers = Arrays.copyOfRange(speakers, 0, Consts.SPEAKERS_PER_SESSION); //truncate the array
+            else
+                this.speakers = speakers;
+
             this.time = time;
             this.day = day;
         }
@@ -42,22 +44,20 @@ public interface CongressBooking extends Remote {
             return Consts.SPEAKERS_PER_SESSION - speakers.length >= speakersNeeded;
         }
 
-//        public int getFreeSpeakerSlot() {
-//            return freeSpeakerSlot;
-//        }
-
         public String[] getSpeakers() {
             return speakers;
         }
 
-
-        public void addSpeakers(String[] newSpeakers) {
-            //TODO: add Index out of bound exception check
+        public boolean addSpeakers(String[] newSpeakers) {
+            if(newSpeakers.length + speakers.length > Consts.SPEAKERS_PER_SESSION) //too many speakers
+                return false;
 
             String[] newArray = new String[speakers.length + newSpeakers.length];
             System.arraycopy(speakers, 0, newArray, 0, speakers.length);
             System.arraycopy(newSpeakers, 0, newArray, speakers.length, newSpeakers.length);
             speakers = newArray;
+
+            return true;
 
         }
 

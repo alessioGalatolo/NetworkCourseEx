@@ -1,55 +1,37 @@
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+
 public class MainClass {
 
-    //main class. launches an instance of the server and an instance of the client as new threads.
+    //main class. Creates the remote object and the launches the client who will be using it
     public static void main(String[] args) {
-        //may get the _________ address, in its absence it uses a default one
+        //may get the port of the registry, in its absence it uses a default one
 
-
-        int socketPort = Consts.SOCKET_PORT;
-
+        int socketPort = Consts.SOCKET_PORT; //default port
         try{
-            socketPort = Integer.parseInt(args[0]);
+            socketPort = Integer.parseInt(args[0]); //look for port as argument
         }catch (IndexOutOfBoundsException ignored){
-            System.out.println("No multicast address found, using default one");
+            System.out.println("No port found, using default one");
         }
 
 
-        TServer server = new TServer(new String[]{String.valueOf(Consts.SOCKET_PORT)}); //passing the same address to client and server
-        server.run();
+        try {
+            //create registry
+            LocateRegistry.createRegistry(socketPort);
+            Registry r = LocateRegistry.getRegistry(socketPort);
 
-        TClient client = new TClient(new String[]{String.valueOf(Consts.SOCKET_PORT)});
-        client.start();
+            CongressEasyBooking congressEasyBooking = new CongressEasyBooking(); //create remote object
+            r.rebind(Consts.CONGRESS_STUB_NAME, congressEasyBooking); //bind remote object
 
+            RMIClient.main(new String[]{String.valueOf(socketPort)}); //launch client
 
-    }
+            //unexport object to terminate the RMI thread
+            UnicastRemoteObject.unexportObject(congressEasyBooking, true);
 
-    //simple class to call main method of _____________ in a separate thread
-    static class TServer extends Thread{
-
-        private String[] args;
-
-        public TServer(String[] args){
-            this.args = args;
-        }
-
-        @Override
-        public void run() {
-            Server.main(args);
-        }
-    }
-
-    //simple class to call main method of _________________ in a separate thread
-    static class TClient extends Thread{
-
-        private String[] args;
-
-        public TClient(String[] args){
-            this.args = args;
-        }
-
-        @Override
-        public void run() {
-            Client.main(args);
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 }
