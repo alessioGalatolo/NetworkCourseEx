@@ -3,7 +3,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Arrays;
 
-//interface of the
+//interface to book sessions of the congress (used by the client for RMI)
 public interface CongressBooking extends Remote {
 
     //books the session requested
@@ -15,21 +15,26 @@ public interface CongressBooking extends Remote {
     Session[][] getCongressProgram() throws RemoteException;
 
 
-    //data class for a session
+    //data class for a session, it is used to book the session
+    //it implements serializable to let the client send the Session to the server
     class Session implements Serializable {
-        private String[] speakers;
-        private int time;
-        private int day;
+        private String[] speakers; //list of speakers of the session, initialized as empty array; size always < MAX_SPEAKERS
+        private int time; //hour of the session, counting from 0
+        private int day; //day of the session, counting from 0
 
 
         public Session(String[] speakers, int time, int day) {
-            if(speakers.length > Consts.SPEAKERS_PER_SESSION)
-                this.speakers = Arrays.copyOfRange(speakers, 0, Consts.SPEAKERS_PER_SESSION); //truncate the array
+            if(speakers.length > Consts.SPEAKERS_PER_SESSION) //checks array size
+                this.speakers = Arrays.copyOfRange(speakers, 0, Consts.SPEAKERS_PER_SESSION); //truncate the array if bigger than allowed
             else
                 this.speakers = speakers;
 
             this.time = time;
             this.day = day;
+        }
+
+        public Session(int time, int day){
+            this(new String[0], time, day);
         }
 
         public int getDay() {
@@ -40,6 +45,7 @@ public interface CongressBooking extends Remote {
             return time;
         }
 
+        //returns true if there is space for int speakers
         public boolean hasFreeSpeakerSlot(int speakersNeeded){
             return Consts.SPEAKERS_PER_SESSION - speakers.length >= speakersNeeded;
         }
@@ -48,6 +54,8 @@ public interface CongressBooking extends Remote {
             return speakers;
         }
 
+        //adds the speakers to the list if the sum of the arrays doesn't exceed the maximum allowed
+        //returns the outcome of the operation
         public boolean addSpeakers(String[] newSpeakers) {
             if(newSpeakers.length + speakers.length > Consts.SPEAKERS_PER_SESSION) //too many speakers
                 return false;
@@ -60,6 +68,7 @@ public interface CongressBooking extends Remote {
             return true;
 
         }
+
 
         @Override
         public String toString() {

@@ -21,8 +21,8 @@ public class RMIClient {
 
             //starting to take session to be added to remote object
 
-            //may get the details of the session manually from the user or it may generate them
-            //randomly using the 'auto' command
+            //may get the details of the session manually from the user or
+            // it may generate them randomly using the 'auto' command
             System.out.println("Type exit or quit at any moment to terminate");
             while (true) {
                 System.out.println("Please insert the list of the speakers separated by a space (or 'auto' for autocomplete): ");
@@ -39,7 +39,7 @@ public class RMIClient {
 
                     //generate data
                     for (int i = 0; i < n; i++) {
-                        speakers = Arrays.copyOfRange(Consts.SPEAKERS_NAMES, 0, random.nextInt(4) + 1); //array of names
+                        speakers = Arrays.copyOfRange(Consts.GET_SPEAKERS_NAMES(), 0, random.nextInt(4) + 1); //array of names
                         time = random.nextInt(Consts.SESSIONS_PER_DAY);
                         day = random.nextInt(Consts.CONGRESS_DAYS);
                         serverObject.bookSession(new CongressBooking.Session(speakers, time, day));

@@ -2,11 +2,13 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 
+//simple implementation of the congress booking
 public class CongressEasyBooking extends UnicastRemoteObject implements CongressBooking {
-    private Session[][] congressProgram = new Session[Consts.CONGRESS_DAYS][Consts.SESSIONS_PER_DAY];
+
+    private Session[][] congressProgram = new Session[Consts.CONGRESS_DAYS][Consts.SESSIONS_PER_DAY]; //stores the schedule for the congress
 
     public CongressEasyBooking() throws RemoteException {
-        super();
+        super(); //creates the remote object
 
         //fill congressProgram with null
         for(int i = 0; i < Consts.CONGRESS_DAYS; i++)
@@ -21,19 +23,20 @@ public class CongressEasyBooking extends UnicastRemoteObject implements Congress
 
         Session requestedSession = congressProgram[session.getDay()][session.getTime()];
         if(requestedSession == null){
-            //session is null => free
+            //session is null => it has to be created
             congressProgram[session.getDay()][session.getTime()] = session;
             return true;
 
+            
+
         }else if(requestedSession.hasFreeSpeakerSlot(session.getSpeakers().length)){
             //enough slots
-            if(requestedSession.addSpeakers(session.getSpeakers()))
-                return true;
 
-            //the speakers were not added
-            return false;
+            //return the outcome of the add
+            return requestedSession.addSpeakers(session.getSpeakers());
         }
 
+        //not enough slots
         return false;
     }
 

@@ -10,5 +10,11 @@ public final class Consts {
     public static final int SOCKET_PORT = 6789;
     public static final int ARRAY_INIT_SIZE = 1024;
     public static final String CONGRESS_STUB_NAME = "CONGRESS_EASY_BOOKING_OBJECT_STUB_NAME";
-    public static final String[] SPEAKERS_NAMES = {"name1", "name2", "name3", "name4", "name5"};/*Arrays.setAll(SPEAKERS_NAMES, (index) -> "name" + index);*/
+
+    private static final String[] SPEAKERS_NAMES = new String[Consts.SPEAKERS_PER_SESSION];// = {"name1", "name2", "name3", "name4", "name5"};
+
+    public static final String[] GET_SPEAKERS_NAMES(){
+        Arrays.setAll(SPEAKERS_NAMES, (index) -> "name" + index);
+        return SPEAKERS_NAMES;
+    }
 }
