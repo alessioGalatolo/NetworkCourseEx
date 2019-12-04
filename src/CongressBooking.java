@@ -6,12 +6,12 @@ import java.util.Arrays;
 //interface to book sessions of the congress (used by the client for RMI)
 public interface CongressBooking extends Remote {
 
-    //books the session requested
-    //@requires: the requested session has at least a speaker slot free
-    //@returns: the outcome of the request
+    //books the requested session (a session is a set of day, hour and list of speakers)
+    //requires: the requested session is valid and it has at least a free speaker slot
+    //returns: the outcome of the request
     boolean bookSession(Session session) throws RemoteException;
 
-    //@returns: a list of all the session for the congress
+    //returns: a list of all the session for the congress (size = days * sessions)
     Session[][] getCongressProgram() throws RemoteException;
 
 

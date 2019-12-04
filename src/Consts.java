@@ -13,8 +13,10 @@ public final class Consts {
 
     private static final String[] SPEAKERS_NAMES = new String[Consts.SPEAKERS_PER_SESSION];// = {"name1", "name2", "name3", "name4", "name5"};
 
+    //returns and array with some names
     public static final String[] GET_SPEAKERS_NAMES(){
-        Arrays.setAll(SPEAKERS_NAMES, (index) -> "name" + index);
+        if(SPEAKERS_NAMES[0] == null)
+            Arrays.setAll(SPEAKERS_NAMES, (index) -> "name" + (index + 1));
         return SPEAKERS_NAMES;
     }
 }
