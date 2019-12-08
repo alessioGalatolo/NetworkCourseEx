@@ -1,4 +1,4 @@
-//class with most used constants
+package CongressScheduler;//class with most used constants
 
 import java.util.Arrays;
 
